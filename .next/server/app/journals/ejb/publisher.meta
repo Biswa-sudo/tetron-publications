@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/journals/layout,_N_T_/journals/ejb/layout,_N_T_/journals/ejb/publisher/layout,_N_T_/journals/ejb/publisher/page,_N_T_/journals/ejb/publisher/"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/journals/ejb/publisher/__PAGE__",
+    "/journals/ejb/publisher",
+    "/journals/ejb",
+    "/journals",
+    "/_index",
+    "/_head"
+  ]
+}

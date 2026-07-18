@@ -1,0 +1,4 @@
+:HL["/_next/static/chunks/d43ab978ac5b76ce.css","style"]
+:HL["/_next/static/chunks/7594a91394febfa4.css","style"]
+:HL["/ejb.jpg","image"]
+0:{"buildId":"wGYpAPwPH8vyX-SpwFgqw","tree":{"name":"","paramType":null,"paramKey":"","hasRuntimePrefetch":false,"slots":{"children":{"name":"journals","paramType":null,"paramKey":"journals","hasRuntimePrefetch":false,"slots":{"children":{"name":"ejb","paramType":null,"paramKey":"ejb","hasRuntimePrefetch":false,"slots":{"children":{"name":"european-journal-of-biosciences","paramType":null,"paramKey":"european-journal-of-biosciences","hasRuntimePrefetch":false,"slots":{"children":{"name":"__PAGE__","paramType":null,"paramKey":"__PAGE__","hasRuntimePrefetch":false,"slots":null,"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":false}},"isRootLayout":true},"staleTime":300}

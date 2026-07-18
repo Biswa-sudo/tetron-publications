@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/journals/layout,_N_T_/journals/ejmi/layout,_N_T_/journals/ejmi/about/layout,_N_T_/journals/ejmi/about/page,_N_T_/journals/ejmi/about/"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/journals/ejmi/about/__PAGE__",
+    "/journals/ejmi/about",
+    "/journals/ejmi",
+    "/journals",
+    "/_index",
+    "/_head"
+  ]
+}

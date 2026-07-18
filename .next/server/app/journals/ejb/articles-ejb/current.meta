@@ -1,0 +1,18 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/journals/layout,_N_T_/journals/ejb/layout,_N_T_/journals/ejb/articles-ejb/layout,_N_T_/journals/ejb/articles-ejb/current/layout,_N_T_/journals/ejb/articles-ejb/current/page,_N_T_/journals/ejb/articles-ejb/current/"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/journals/ejb/articles-ejb/current/__PAGE__",
+    "/journals/ejb/articles-ejb/current",
+    "/journals/ejb/articles-ejb",
+    "/journals/ejb",
+    "/journals",
+    "/_index",
+    "/_head"
+  ]
+}

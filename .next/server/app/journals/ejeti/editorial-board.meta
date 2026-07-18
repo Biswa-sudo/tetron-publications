@@ -1,0 +1,17 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/journals/layout,_N_T_/journals/ejeti/layout,_N_T_/journals/ejeti/editorial-board/layout,_N_T_/journals/ejeti/editorial-board/page,_N_T_/journals/ejeti/editorial-board/"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/journals/ejeti/editorial-board/__PAGE__",
+    "/journals/ejeti/editorial-board",
+    "/journals/ejeti",
+    "/journals",
+    "/_index",
+    "/_head"
+  ]
+}
