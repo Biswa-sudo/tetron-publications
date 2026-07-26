@@ -1,0 +1,6 @@
+{
+  "version": 3,
+  "sources": [],
+  "sections": [
+    {"offset": {"line": 1, "column": 0}, "map": {"version":3,"sources":["turbopack:///[project]/app/globals.css"],"sourcesContent":["@media (min-width: 992px) {\n  .navbar .dropdown:hover > .dropdown-menu {\n    display: block;\n  }\n}\n"],"names":[],"mappings":"AAAA;EACE"}}]
+}

@@ -1,0 +1,8 @@
+/* [project]/app/globals.css [app-client] (css) */
+@media (min-width: 992px) {
+  .navbar .dropdown:hover > .dropdown-menu {
+    display: block;
+  }
+}
+
+/*# sourceMappingURL=app_globals_css_bad6b30c._.single.css.map*/
