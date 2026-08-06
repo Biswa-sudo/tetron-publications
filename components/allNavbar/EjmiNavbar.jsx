@@ -19,8 +19,12 @@ export default function EjmiNavbar() {
           <span className="navbar-toggler-icon"></span>
         </button>
 
-        <div className="collapse navbar-collapse" id="mainNav">
-          <ul className="navbar-nav ms-auto gap-3">
+        <div className="collapse navbar-collapse" id="ejmiNav">
+          {/* 
+            🔁 CHANGE: ms-auto → me-auto 
+            This pushes the nav items to the left.
+          */}
+          <ul className="navbar-nav me-auto gap-3">
 
             <li className="nav-item">
               <Link className="nav-link fw-semibold" href="/journals/ejmi/about">

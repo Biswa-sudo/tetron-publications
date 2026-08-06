@@ -5,7 +5,7 @@ import EjcmrNavbar from "@/components/allNavbar/EjcmrNavbar";
 export default function EJCMREditorialBoard() {
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjcmrNavbar />
 
       <section className="container my-5">

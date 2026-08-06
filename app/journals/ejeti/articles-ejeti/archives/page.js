@@ -16,7 +16,7 @@ export default function ArchivesEjetPage() {
 
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjetNavbar />   
 
       {/* Main Content Section */}

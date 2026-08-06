@@ -17,7 +17,11 @@ export default function EjetiNavbar() {
         </button>
 
         <div className="collapse navbar-collapse" id="ejetNav">
-          <ul className="navbar-nav ms-auto gap-4 align-items-center">
+          {/* 
+            🔁 CHANGE: ms-auto → me-auto 
+            This pushes the nav items to the left.
+          */}
+          <ul className="navbar-nav me-auto gap-3">
 
             <li className="nav-item">
               <Link className="nav-link fw-semibold text-dark" href="/journals/ejeti/about">

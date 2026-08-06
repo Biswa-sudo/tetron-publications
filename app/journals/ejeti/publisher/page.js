@@ -6,7 +6,7 @@ import EjetiNavbar from "@/components/allNavbar/EjetiNavbar";
 export default function PublisherPage() {
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjetiNavbar />
 
       <section className="container my-5">

@@ -1,0 +1,139 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 800" preserveAspectRatio="xMidYMid slice" width="100%" height="100%">
+  <defs>
+    <!-- Deep Space / Tech Gradient Background -->
+    <radialGradient id="bgGrad" cx="50%" cy="50%" r="75%">
+      <stop offset="0%" stop-color="#0c1838" />
+      <stop offset="100%" stop-color="#020617" />
+    </radialGradient>
+
+    <!-- Glowing Effect for Nodes and Electrons -->
+    <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="4" result="blur" />
+      <feMerge>
+        <feMergeNode in="blur" />
+        <feMergeNode in="blur" />
+        <feMergeNode in="SourceGraphic" />
+      </feMerge>
+    </filter>
+
+    <!-- Subtle Hexagonal Grid (Graphene / Biology) -->
+    <pattern id="hexGrid" width="60" height="103.923" patternUnits="userSpaceOnUse" patternTransform="scale(0.6)">
+      <path d="M30 0 L60 17.32 L60 51.96 L30 69.28 L0 51.96 L0 17.32 Z" fill="none" stroke="#38bdf8" stroke-width="0.5" stroke-opacity="0.15" />
+      <path d="M30 103.92 L60 86.6 L60 51.96 L30 69.28 L0 51.96 L0 86.6 Z" fill="none" stroke="#38bdf8" stroke-width="0.5" stroke-opacity="0.15" />
+    </pattern>
+
+    <!-- Signal Wave Gradient -->
+    <linearGradient id="waveGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" stop-color="#0ea5e9" stop-opacity="0"/>
+      <stop offset="50%" stop-color="#38bdf8" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#0ea5e9" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Base Layer -->
+  <rect width="100%" height="100%" fill="url(#bgGrad)" />
+  
+  <!-- Shimmering Hexagon Layer -->
+  <rect width="100%" height="100%" fill="url(#hexGrid)">
+    <animate attributeName="opacity" values="0.4; 1; 0.4" dur="8s" repeatCount="indefinite" />
+  </rect>
+
+  <!-- ================= BACKGROUND WAVES (Physics/Signals) ================= -->
+  <g stroke="url(#waveGrad)" stroke-width="2" fill="none">
+    <path d="M-200,600 Q0,500 200,600 T600,600 T1000,600 T1400,600">
+      <!-- FIXED: Removed the invalid "linear" attribute -->
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="-400 0" dur="10s" repeatCount="indefinite" />
+    </path>
+    <path d="M-200,650 Q0,750 200,650 T600,650 T1000,650 T1400,650" opacity="0.5">
+      <!-- FIXED: Removed the invalid "linear" attribute -->
+      <animateTransform attributeName="transform" type="translate" from="0 0" to="-400 0" dur="14s" repeatCount="indefinite" />
+    </path>
+  </g>
+
+  <!-- ================= NEURAL / DATA NETWORK (AI/Data Science) ================= -->
+  <g transform="translate(0, 0)">
+    <!-- Drifting Group 1 -->
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0,0; 15,-20; 0,0" dur="12s" repeatCount="indefinite" />
+      <!-- Connections -->
+      <path d="M150,200 L300,120 L450,250 L350,380 L150,200 Z" fill="none" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.3">
+        <animate attributeName="stroke-opacity" values="0.1; 0.5; 0.1" dur="4s" repeatCount="indefinite" />
+      </path>
+      <path d="M300,120 L350,380 L200,450" fill="none" stroke="#60a5fa" stroke-width="1" stroke-opacity="0.2" />
+      <!-- Nodes -->
+      <circle cx="150" cy="200" r="4" fill="#38bdf8" filter="url(#glow)" />
+      <circle cx="300" cy="120" r="6" fill="#818cf8" filter="url(#glow)" />
+      <circle cx="450" cy="250" r="5" fill="#38bdf8" filter="url(#glow)" />
+      <circle cx="350" cy="380" r="4" fill="#818cf8" filter="url(#glow)" />
+      <circle cx="200" cy="450" r="3" fill="#38bdf8" />
+    </g>
+
+    <!-- Drifting Group 2 -->
+    <g>
+      <animateTransform attributeName="transform" type="translate" values="0,0; -20,15; 0,0" dur="15s" repeatCount="indefinite" />
+      <path d="M500,150 L650,200 L700,100 L500,150 L450,250" fill="none" stroke="#93c5fd" stroke-width="0.8" stroke-opacity="0.2">
+         <animate attributeName="stroke-opacity" values="0.2; 0.6; 0.2" dur="6s" repeatCount="indefinite" />
+      </path>
+      <circle cx="500" cy="150" r="3" fill="#60a5fa" />
+      <circle cx="650" cy="200" r="5" fill="#60a5fa" filter="url(#glow)" />
+      <circle cx="700" cy="100" r="4" fill="#93c5fd" />
+    </g>
+  </g>
+
+  <!-- ================= QUANTUM ATOM CORE (Chemistry/Physics) ================= -->
+  <g transform="translate(900, 400)">
+    <!-- Core Nucleus -->
+    <circle cx="0" cy="0" r="14" fill="#ffffff" filter="url(#glow)">
+      <animate attributeName="r" values="12; 16; 12" dur="2s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="0" cy="0" r="6" fill="#0ea5e9" />
+
+    <!-- Orbital 1 -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="15s" repeatCount="indefinite" />
+      <ellipse cx="0" cy="0" rx="220" ry="60" fill="none" stroke="#38bdf8" stroke-width="1.5" stroke-opacity="0.4" />
+      <!-- Electron -->
+      <circle cx="220" cy="0" r="5" fill="#38bdf8" filter="url(#glow)">
+        <animate attributeName="opacity" values="1; 0.3; 1" dur="1.5s" repeatCount="indefinite" />
+      </circle>
+    </g>
+
+    <!-- Orbital 2 -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="60" to="420" dur="20s" repeatCount="indefinite" />
+      <ellipse cx="0" cy="0" rx="220" ry="60" fill="none" stroke="#818cf8" stroke-width="1.5" stroke-opacity="0.4" />
+      <!-- Electron -->
+      <circle cx="220" cy="0" r="6" fill="#818cf8" filter="url(#glow)">
+        <animate attributeName="opacity" values="0.3; 1; 0.3" dur="2s" repeatCount="indefinite" />
+      </circle>
+    </g>
+
+    <!-- Orbital 3 -->
+    <g>
+      <animateTransform attributeName="transform" type="rotate" from="120" to="480" dur="25s" repeatCount="indefinite" />
+      <ellipse cx="0" cy="0" rx="220" ry="60" fill="none" stroke="#0ea5e9" stroke-width="1.5" stroke-opacity="0.4" />
+      <!-- Electron -->
+      <circle cx="-220" cy="0" r="4" fill="#0ea5e9" filter="url(#glow)" />
+    </g>
+  </g>
+
+  <!-- ================= FLOATING PARTICLES ================= -->
+  <g fill="#e0f2fe">
+    <circle cx="100" cy="600" r="2" filter="url(#glow)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 20,-100; 0,-200" dur="10s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0; 1; 0" dur="10s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="400" cy="700" r="3" filter="url(#glow)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -30,-150; -50,-300" dur="15s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0; 0.8; 0" dur="15s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="800" cy="550" r="1.5" filter="url(#glow)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; 40,-80; 80,-160" dur="12s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0; 1; 0" dur="12s" repeatCount="indefinite" />
+    </circle>
+    <circle cx="1100" cy="650" r="2.5" filter="url(#glow)">
+      <animateTransform attributeName="transform" type="translate" values="0,0; -20,-120; 0,-240" dur="14s" repeatCount="indefinite" />
+      <animate attributeName="opacity" values="0; 0.6; 0" dur="14s" repeatCount="indefinite" />
+    </circle>
+  </g>
+</svg>

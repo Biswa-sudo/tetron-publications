@@ -16,7 +16,11 @@ export default function EjbNavbar() {
         </button>
 
         <div className="collapse navbar-collapse" id="ejbNav">
-          <ul className="navbar-nav ms-auto gap-3">
+          {/* 
+            🔁 CHANGE: ms-auto → me-auto 
+            This pushes the nav items to the left.
+          */}
+          <ul className="navbar-nav me-auto gap-3">
 
             <li className="nav-item">
               <Link className="nav-link fw-semibold text-dark" href="/journals/ejb/about">
@@ -30,32 +34,32 @@ export default function EjbNavbar() {
               </Link>
             </li>
 
-            {/* ===== Articles EJB Dropdown ===== */}
+            {/* Articles EJB Dropdown */}
             <li className="nav-item dropdown">
               <a
                 className="nav-link dropdown-toggle fw-semibold text-dark"
                 href="#"
                 data-bs-toggle="dropdown"
               >
-                Articles EJB
+                Articles
               </a>
 
               <ul className="dropdown-menu">
-                <li>
+                {/* <li>
                   <Link className="dropdown-item" href="/journals/ejb/articles-ejb/archives">
                     Archives
                   </Link>
-                </li>
+                </li> */}
 
                 <li>
-                  <Link className="dropdown-item" href="/journals/ejb/articles-ejb/article-in-press">
-                    Article in Press
+                  <Link className="dropdown-item" href="/journals/ejb/articles-ejb/articles">
+                    Articles
                   </Link>
                 </li>
 
                 <li>
-                  <Link className="dropdown-item" href="/journals/ejb/articles-ejb/current">
-                    Current
+                  <Link className="dropdown-item" href="/journals/ejb/articles-ejb/volumes-and-issues">
+                    Volumes and Issues
                   </Link>
                 </li>
               </ul>

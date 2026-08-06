@@ -55,7 +55,7 @@ export default function ArticlesInPressEjmiPage() {
 
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjmiNavbar />   
 
       {/* Main Content Section */}

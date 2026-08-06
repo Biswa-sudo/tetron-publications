@@ -5,7 +5,7 @@ import EjmiNavbar from "@/components/allNavbar/EjmiNavbar";
 export default function EJMIPage() {
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjmiNavbar />
 
       <section className="container my-5">

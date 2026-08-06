@@ -1,4 +1,10 @@
 {
   "/_not-found/page": "app/_not-found/page.js",
+  "/journals/ejb/articles-ejb/archives/page": "app/journals/ejb/articles-ejb/archives/page.js",
+  "/journals/ejb/articles-ejb/articles/page": "app/journals/ejb/articles-ejb/articles/page.js",
+  "/journals/ejb/articles-ejb/volumes-and-issues/page": "app/journals/ejb/articles-ejb/volumes-and-issues/page.js",
+  "/journals/ejb/european-journal-of-biosciences/page": "app/journals/ejb/european-journal-of-biosciences/page.js",
+  "/journals/ejcmr/european-journal-of-clinical-and-medical-research/page": "app/journals/ejcmr/european-journal-of-clinical-and-medical-research/page.js",
+  "/journals/page": "app/journals/page.js",
   "/page": "app/page.js"
 }

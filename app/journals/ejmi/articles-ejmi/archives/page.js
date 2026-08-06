@@ -16,7 +16,7 @@ export default function ArchivesEjmiPage() {
 
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjmiNavbar />   
 
       {/* Main Content Section */}

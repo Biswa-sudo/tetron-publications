@@ -46,7 +46,7 @@ export default function CurrentIssueEjetPage() {
 
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjetNavbar />   
 
       {/* Main Content Section */}

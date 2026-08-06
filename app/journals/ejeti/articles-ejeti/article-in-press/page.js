@@ -15,7 +15,7 @@ export default function ArticlesInPressEjetPage() {
 
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjetNavbar />   
 
       {/* Main Content Section */}

@@ -64,7 +64,7 @@ export default function CurrentIssueEjcmrPage() {
 
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjcmrNavbar />   
 
       {/* Main Content Section */}

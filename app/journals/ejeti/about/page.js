@@ -5,7 +5,7 @@ import EjetiNavbar from "@/components/allNavbar/EjetiNavbar";
 export default function EJETIAimsScopePage() {
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjetiNavbar />
 
       <section className="container my-5">

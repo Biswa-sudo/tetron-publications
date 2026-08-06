@@ -15,7 +15,7 @@ export default function ArchivesPage() {
 
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjcmrNavbar />   
 
       {/* Main Content Section */}

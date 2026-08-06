@@ -15,7 +15,7 @@ export default function ArticlesInPressEjcmrPage() {
 
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjcmrNavbar />   
 
       {/* Main Content Section */}

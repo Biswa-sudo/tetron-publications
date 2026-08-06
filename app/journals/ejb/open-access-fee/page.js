@@ -5,7 +5,7 @@ import EjbNavbar from "@/components/allNavbar/EjbNavbar";
 export default function ArticleProcessingChargesPage() {
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjbNavbar />
 
       <section className="container my-5">

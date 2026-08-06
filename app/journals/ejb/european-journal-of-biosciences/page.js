@@ -5,7 +5,7 @@ import EjbNavbar from "@/components/allNavbar/EjbNavbar";
 export default function JournalDetailPage() {
   return (
     <>
-      <Header />
+      <Header hideNav={true} />   {/* ← hides the main nav */}
       <EjbNavbar />
 
       <section className="container my-5">

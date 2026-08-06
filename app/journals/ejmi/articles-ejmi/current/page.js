@@ -28,7 +28,7 @@ export default function CurrentIssueEjmiPage() {
 
   return (
     <>
-      <Header />
+      <Header hideNav={true} />
       <EjmiNavbar />   
 
       {/* Main Content Section */}
