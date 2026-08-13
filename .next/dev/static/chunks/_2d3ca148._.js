@@ -657,7 +657,7 @@ function EjcmrNavbar() {
                                         className: "nav-link dropdown-toggle fw-semibold text-dark",
                                         href: "#",
                                         "data-bs-toggle": "dropdown",
-                                        children: "Articles EJCMR"
+                                        children: "Articles"
                                     }, void 0, false, {
                                         fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
                                         lineNumber: 40,
@@ -669,8 +669,8 @@ function EjcmrNavbar() {
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                                     className: "dropdown-item",
-                                                    href: "/journals/ejcmr/articles-ejcmr/archives",
-                                                    children: "Archives"
+                                                    href: "/journals/ejcmr/articles-ejcmr/articles",
+                                                    children: "Articles"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
                                                     lineNumber: 50,
@@ -684,31 +684,16 @@ function EjcmrNavbar() {
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                                     className: "dropdown-item",
-                                                    href: "/journals/ejcmr/articles-ejcmr/article-in-press",
-                                                    children: "Article in Press"
+                                                    href: "/journals/ejcmr/articles-ejcmr/volumes-and-issues",
+                                                    children: "Volumes and Issues"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                                    lineNumber: 56,
+                                                    lineNumber: 58,
                                                     columnNumber: 19
                                                 }, this)
                                             }, void 0, false, {
                                                 fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                                lineNumber: 55,
-                                                columnNumber: 17
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                                    className: "dropdown-item",
-                                                    href: "/journals/ejcmr/articles-ejcmr/current",
-                                                    children: "Current"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                                    lineNumber: 62,
-                                                    columnNumber: 19
-                                                }, this)
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                                lineNumber: 61,
+                                                lineNumber: 57,
                                                 columnNumber: 17
                                             }, this)
                                         ]
@@ -731,12 +716,12 @@ function EjcmrNavbar() {
                                     children: "Open Access Fee"
                                 }, void 0, false, {
                                     fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                    lineNumber: 70,
+                                    lineNumber: 66,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                lineNumber: 69,
+                                lineNumber: 65,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -747,12 +732,12 @@ function EjcmrNavbar() {
                                     children: "For Authors"
                                 }, void 0, false, {
                                     fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                    lineNumber: 76,
+                                    lineNumber: 72,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                lineNumber: 75,
+                                lineNumber: 71,
                                 columnNumber: 13
                             }, this),
                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
@@ -763,12 +748,12 @@ function EjcmrNavbar() {
                                     children: "Publisher"
                                 }, void 0, false, {
                                     fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                    lineNumber: 82,
+                                    lineNumber: 78,
                                     columnNumber: 15
                                 }, this)
                             }, void 0, false, {
                                 fileName: "[project]/components/allNavbar/EjcmrNavbar.jsx",
-                                lineNumber: 81,
+                                lineNumber: 77,
                                 columnNumber: 13
                             }, this)
                         ]

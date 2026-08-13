@@ -1,8 +1,49 @@
 "use client";
 
 import Link from "next/link";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 
 export default function Header({ hideNav = false }) {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const router = useRouter();
+
+  // Check if user is logged in
+  useEffect(() => {
+    const checkAuth = async () => {
+      try {
+        const response = await fetch("/api/auth/me");
+        if (response.ok) {
+          const data = await response.json();
+          setUser(data.user);
+        }
+      } catch (error) {
+        console.error("Auth check error:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    checkAuth();
+  }, []);
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", {
+        method: "POST",
+      });
+
+      if (response.ok) {
+        setUser(null);
+        router.push("/");
+        router.refresh();
+      }
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
+  };
+
   return (
     <header>
       {/* ===== TOP INFO BAR (always visible) ===== */}
@@ -57,10 +98,7 @@ export default function Header({ hideNav = false }) {
             </button>
 
             <div className="collapse navbar-collapse" id="mainNav">
-              {/* 
-                🔁 CHANGE: ms-auto → me-auto 
-                This pushes the nav items to the left.
-              */}
+              {/* Nav links - Left aligned */}
               <ul className="navbar-nav me-auto fw-semibold gap-lg-4 fs-5">
 
                 {/* ABOUT US */}
@@ -150,6 +188,81 @@ export default function Header({ hideNav = false }) {
                   </Link>
                 </li>
 
+              </ul>
+
+              {/* ===== LOGIN / USER SECTION (Right side) ===== */}
+              <ul className="navbar-nav gap-2">
+                {loading ? (
+                  // Loading state
+                  <li className="nav-item">
+                    <span className="nav-link text-muted">
+                      <span className="spinner-border spinner-border-sm me-1"></span>
+                      Loading...
+                    </span>
+                  </li>
+                ) : user ? (
+                  // User is logged in
+                  <>
+                    <li className="nav-item dropdown">
+                      <Link
+                        href="#"
+                        className="nav-link dropdown-toggle text-dark fw-semibold"
+                        data-bs-toggle="dropdown"
+                      >
+                        <i className="bi bi-person-circle me-1"></i>
+                        {user.name}
+                      </Link>
+                      <ul className="dropdown-menu dropdown-menu-end border-0 shadow-sm">
+                        <li>
+                          <Link className="dropdown-item py-2" href="/profile">
+                            <i className="bi bi-person me-2"></i>
+                            My Profile
+                          </Link>
+                        </li>
+                        <li>
+                          <Link className="dropdown-item py-2" href="/dashboard">
+                            <i className="bi bi-speedometer2 me-2"></i>
+                            Dashboard
+                          </Link>
+                        </li>
+                        {user.role === "admin" && (
+                          <li>
+                            <Link className="dropdown-item py-2" href="/admin">
+                              <i className="bi bi-shield-lock me-2"></i>
+                              Admin Panel
+                            </Link>
+                          </li>
+                        )}
+                        <li><hr className="dropdown-divider" /></li>
+                        <li>
+                          <button
+                            className="dropdown-item py-2 text-danger"
+                            onClick={handleLogout}
+                          >
+                            <i className="bi bi-box-arrow-right me-2"></i>
+                            Logout
+                          </button>
+                        </li>
+                      </ul>
+                    </li>
+                  </>
+                ) : (
+                  // User is not logged in
+                  <>
+                    <li className="nav-item">
+                      <Link href="/login" className="btn btn-outline-primary btn-sm px-3">
+                        <i className="bi bi-box-arrow-in-right me-1"></i>
+                        Login
+                      </Link>
+                    </li>
+                    <li className="nav-item">
+                      <Link href="/register" className="btn btn-primary btn-sm px-3">
+                        <i className="bi bi-person-plus me-1"></i>
+                        Register
+                      </Link>
+                    </li>
+                  </>
+                )}
               </ul>
             </div>
           </div>

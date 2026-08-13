@@ -45,34 +45,34 @@ export default function EjmiNavbar() {
                 href="#"
                 data-bs-toggle="dropdown"
               >
-                Articles EJMI
+                Articles
               </a>
 
               <ul className="dropdown-menu">
-                <li>
+                {/* <li>
                   <Link
                     className="dropdown-item"
                     href="/journals/ejmi/articles-ejmi/archives"
                   >
                     Archives
                   </Link>
-                </li>
+                </li> */}
 
                 <li>
                   <Link
                     className="dropdown-item"
-                    href="/journals/ejmi/articles-ejmi/article-in-press"
+                    href="/journals/ejmi/articles-ejmi/articles"
                   >
-                    Article in Press
+                    Articles
                   </Link>
                 </li>
 
                 <li>
                   <Link
                     className="dropdown-item"
-                    href="/journals/ejmi/articles-ejmi/current"
+                    href="/journals/ejmi/articles-ejmi/volumes-and-issues"
                   >
-                    Current
+                    Volumes and Issues
                   </Link>
                 </li>
               </ul>

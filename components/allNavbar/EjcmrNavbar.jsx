@@ -42,25 +42,21 @@ export default function EjcmrNavbar() {
                 href="#"
                 data-bs-toggle="dropdown"
               >
-                Articles EJCMR
+                Articles
               </a>
 
               <ul className="dropdown-menu">
                 <li>
-                  <Link className="dropdown-item" href="/journals/ejcmr/articles-ejcmr/archives">
-                    Archives
+                  <Link className="dropdown-item" href="/journals/ejcmr/articles-ejcmr/articles">
+                    Articles
                   </Link>
                 </li>
 
-                <li>
-                  <Link className="dropdown-item" href="/journals/ejcmr/articles-ejcmr/article-in-press">
-                    Article in Press
-                  </Link>
-                </li>
+                
 
                 <li>
-                  <Link className="dropdown-item" href="/journals/ejcmr/articles-ejcmr/current">
-                    Current
+                  <Link className="dropdown-item" href="/journals/ejcmr/articles-ejcmr/volumes-and-issues">
+                    Volumes and Issues
                   </Link>
                 </li>
               </ul>

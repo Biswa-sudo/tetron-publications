@@ -3,6 +3,7 @@ import Header from "@/components/Header";
 import HeroSlider from "@/components/HeroSlider";
 import RecentPublications from "@/components/RecentPublications";
 import Footer from "@/components/Footer";
+import WhatsAppButton from "@/components/WhatsAppButton";
 
 export default function HomePage() {
   return (
@@ -12,6 +13,7 @@ export default function HomePage() {
       <HeroSlider />
       <RecentPublications />
       <Footer />
+      <WhatsAppButton />
     </main>
   );
 }

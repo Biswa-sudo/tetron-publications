@@ -42,25 +42,25 @@ export default function EjetiNavbar() {
                 href="#"
                 data-bs-toggle="dropdown"
               >
-                Articles EJET
+                Articles
               </a>
 
               <ul className="dropdown-menu">
-                <li>
+                {/* <li>
                   <Link className="dropdown-item" href="/journals/ejeti/articles-ejeti/archives">
                     Archives
                   </Link>
-                </li>
+                </li> */}
 
                 <li>
-                  <Link className="dropdown-item" href="/journals/ejeti/articles-ejeti/article-in-press">
-                    Article in Press
+                  <Link className="dropdown-item" href="/journals/ejeti/articles-ejeti/articles">
+                    Articles
                   </Link>
                 </li>
 
                 <li>
-                  <Link className="dropdown-item" href="/journals/ejeti/articles-ejeti/current">
-                    Current
+                  <Link className="dropdown-item" href="/journals/ejeti/articles-ejeti/volumes-and-issues">
+                    Volumes and Issues
                   </Link>
                 </li>
               </ul>

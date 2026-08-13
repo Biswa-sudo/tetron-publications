@@ -657,7 +657,7 @@ function EjmiNavbar() {
                                         className: "nav-link dropdown-toggle fw-semibold",
                                         href: "#",
                                         "data-bs-toggle": "dropdown",
-                                        children: "Articles EJMI"
+                                        children: "Articles"
                                     }, void 0, false, {
                                         fileName: "[project]/components/allNavbar/EjmiNavbar.jsx",
                                         lineNumber: 43,
@@ -669,23 +669,8 @@ function EjmiNavbar() {
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                                     className: "dropdown-item",
-                                                    href: "/journals/ejmi/articles-ejmi/archives",
-                                                    children: "Archives"
-                                                }, void 0, false, {
-                                                    fileName: "[project]/components/allNavbar/EjmiNavbar.jsx",
-                                                    lineNumber: 53,
-                                                    columnNumber: 19
-                                                }, this)
-                                            }, void 0, false, {
-                                                fileName: "[project]/components/allNavbar/EjmiNavbar.jsx",
-                                                lineNumber: 52,
-                                                columnNumber: 17
-                                            }, this),
-                                            /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
-                                                children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
-                                                    className: "dropdown-item",
-                                                    href: "/journals/ejmi/articles-ejmi/article-in-press",
-                                                    children: "Article in Press"
+                                                    href: "/journals/ejmi/articles-ejmi/articles",
+                                                    children: "Articles"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/allNavbar/EjmiNavbar.jsx",
                                                     lineNumber: 62,
@@ -699,8 +684,8 @@ function EjmiNavbar() {
                                             /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])("li", {
                                                 children: /*#__PURE__*/ (0, __TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$compiled$2f$react$2f$jsx$2d$dev$2d$runtime$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["jsxDEV"])(__TURBOPACK__imported__module__$5b$project$5d2f$node_modules$2f$next$2f$dist$2f$client$2f$app$2d$dir$2f$link$2e$js__$5b$app$2d$client$5d$__$28$ecmascript$29$__["default"], {
                                                     className: "dropdown-item",
-                                                    href: "/journals/ejmi/articles-ejmi/current",
-                                                    children: "Current"
+                                                    href: "/journals/ejmi/articles-ejmi/volumes-and-issues",
+                                                    children: "Volumes and Issues"
                                                 }, void 0, false, {
                                                     fileName: "[project]/components/allNavbar/EjmiNavbar.jsx",
                                                     lineNumber: 71,
