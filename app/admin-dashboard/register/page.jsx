@@ -1,0 +1,7 @@
+"use client";
+import React from 'react';
+import RegisterPage from '../RegisterPage';
+
+export default function RegisterRoute() {
+  return <RegisterPage />;
+}

@@ -1,3 +1,0 @@
-module.exports=[62925,a=>{"use strict";var b=a.i(7997);function c({children:a}){return(0,b.jsx)("html",{lang:"en",children:(0,b.jsxs)("body",{children:[a,(0,b.jsx)("script",{src:"https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"})]})})}a.s(["default",()=>c,"metadata",0,{title:"Tetron Publications",description:"Empower Knowledge, Foster Growth, Shape the Future"}])}];
-
-//# sourceMappingURL=app_layout_5a7e0b9f.js.map

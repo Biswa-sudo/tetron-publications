@@ -1,0 +1,337 @@
+
+these are all the tables created in db
+-- ============================================================
+-- Journal Publication System – Complete Database Schema
+-- ============================================================
+
+-- Enable foreign key checks (should be ON by default)
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- ------------------------------------------------------------
+-- 1. USERS
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS users (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    password_hash VARCHAR(255) NOT NULL,
+    university VARCHAR(200),
+    role ENUM('admin', 'editor', 'author', 'reviewer') DEFAULT 'author',
+    status ENUM('active', 'pending', 'inactive') DEFAULT 'pending',
+    email_verified BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    last_login TIMESTAMP NULL,
+    INDEX idx_email (email),
+    INDEX idx_role (role),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 2. EDITORS
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS editors (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100) UNIQUE NOT NULL,
+    role ENUM('Editor-in-Chief', 'Chief Editor', 'Editor', 'Associate Editor') NOT NULL,
+    scale VARCHAR(50) NOT NULL,
+    affiliation VARCHAR(200) NOT NULL,
+    country VARCHAR(100) NOT NULL,
+    institution VARCHAR(200) NOT NULL,
+    specialties JSON,
+    status ENUM('active', 'inactive') DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_email (email),
+    INDEX idx_role (role),
+    INDEX idx_status (status)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 3. JOURNALS
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS journals (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    name VARCHAR(200) NOT NULL,
+    issn VARCHAR(20) UNIQUE,
+    publisher VARCHAR(200),
+    description TEXT,
+    website VARCHAR(255),
+    is_active BOOLEAN DEFAULT TRUE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_name (name)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 4. VOLUMES
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS volumes (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    journal_id INT NOT NULL,
+    volume_number VARCHAR(50) NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    from_date DATE NOT NULL,
+    to_date DATE NOT NULL,
+    status ENUM('planned', 'active', 'completed') DEFAULT 'planned',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (journal_id) REFERENCES journals(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_volume (journal_id, volume_number),
+    INDEX idx_journal (journal_id),
+    INDEX idx_dates (from_date, to_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 5. ISSUES
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS issues (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    volume_id INT NOT NULL,
+    issue_number VARCHAR(50) NOT NULL,
+    name VARCHAR(200) NOT NULL,
+    description TEXT,
+    issue_date DATE NOT NULL,
+    publication_date DATE,
+    status ENUM('planned', 'in_progress', 'published', 'archived') DEFAULT 'planned',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (volume_id) REFERENCES volumes(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_issue (volume_id, issue_number),
+    INDEX idx_volume (volume_id),
+    INDEX idx_issue_date (issue_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 6. ARTICLES
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS articles (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    title VARCHAR(500) NOT NULL,
+    abstract TEXT,
+    article_type ENUM('Research Article', 'Review', 'Case Study', 'Short Communication', 'Editorial', 'Book Review') NOT NULL,
+    pages VARCHAR(50),
+    status ENUM('draft', 'submitted', 'under_review', 'accepted', 'rejected', 'published') DEFAULT 'draft',
+    journal_id INT,
+    volume_id INT,
+    issue_id INT,
+    publish_date DATE,
+    issue_date DATE,
+    publication_date DATE,
+    corresponding_author VARCHAR(255),
+    corresponding_email VARCHAR(100),
+    doi VARCHAR(100) UNIQUE,
+    version_of_record VARCHAR(50),
+    cite_this_article TEXT,
+    published_by VARCHAR(200),
+    version_number INT DEFAULT 1,
+    submitted_by INT,
+    submitted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    published_version JSON,
+    FOREIGN KEY (journal_id) REFERENCES journals(id) ON DELETE SET NULL,
+    FOREIGN KEY (volume_id) REFERENCES volumes(id) ON DELETE SET NULL,
+    FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE SET NULL,
+    FOREIGN KEY (submitted_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_journal (journal_id),
+    INDEX idx_volume (volume_id),
+    INDEX idx_issue (issue_id),
+    INDEX idx_status (status),
+    INDEX idx_doi (doi),
+    INDEX idx_submitted_date (submitted_date),
+    INDEX idx_publish_date (publish_date),
+    FULLTEXT idx_title_abstract (title, abstract)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 7. ARTICLE_AUTHORS
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS article_authors (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article_id INT NOT NULL,
+    user_id INT,
+    name VARCHAR(100) NOT NULL,
+    email VARCHAR(100),
+    affiliation VARCHAR(200),
+    institution VARCHAR(200),
+    country VARCHAR(100),
+    is_corresponding BOOLEAN DEFAULT FALSE,
+    author_order INT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_article (article_id),
+    INDEX idx_user (user_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 8. ARTICLE_JOURNALS
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS article_journals (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article_id INT NOT NULL,
+    journal_id INT NOT NULL,
+    is_recent_publication BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (journal_id) REFERENCES journals(id) ON DELETE CASCADE,
+    UNIQUE KEY unique_article_journal (article_id, journal_id),
+    INDEX idx_journal (journal_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 9. ARTICLE_METADATA
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS article_metadata (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article_id INT NOT NULL UNIQUE,
+    references_text TEXT,
+    funding_info TEXT,
+    publisher_note TEXT,
+    rights_and_permissions TEXT,
+    share_this_article TEXT,
+    additional_information JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 10. SUBMISSIONS
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS submissions (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article_id INT NOT NULL,
+    user_id INT NOT NULL,
+    journal_id INT NOT NULL,
+    submitted_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    submitted_file_path VARCHAR(500),
+    file_name VARCHAR(255),
+    file_size INT,
+    status ENUM('pending', 'reviewing', 'accepted', 'rejected') DEFAULT 'pending',
+    reviewer_comments TEXT,
+    reviewed_by INT,
+    reviewed_date TIMESTAMP NULL,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (journal_id) REFERENCES journals(id) ON DELETE CASCADE,
+    FOREIGN KEY (reviewed_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_article (article_id),
+    INDEX idx_user (user_id),
+    INDEX idx_journal (journal_id),
+    INDEX idx_status (status),
+    INDEX idx_submitted_date (submitted_date)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 11. FILES
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS files (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    submission_id INT,
+    article_id INT,
+    file_name VARCHAR(255) NOT NULL,
+    file_path VARCHAR(500) NOT NULL,
+    file_type VARCHAR(100),
+    file_size INT,
+    file_category ENUM('manuscript', 'zip_archive', 'figure', 'table', 'supplementary', 'cover_letter', 'response_letter') DEFAULT 'manuscript',
+    uploaded_by INT,
+    uploaded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (submission_id) REFERENCES submissions(id) ON DELETE CASCADE,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (uploaded_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_submission (submission_id),
+    INDEX idx_article (article_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 12. SHARABLE_LINKS
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS sharable_links (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    article_id INT NOT NULL,
+    share_token VARCHAR(100) UNIQUE NOT NULL,
+    created_by INT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    expires_at TIMESTAMP NULL,
+    clicks INT DEFAULT 0,
+    is_active BOOLEAN DEFAULT TRUE,
+    FOREIGN KEY (article_id) REFERENCES articles(id) ON DELETE CASCADE,
+    FOREIGN KEY (created_by) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_token (share_token),
+    INDEX idx_article (article_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 13. AUDIT_LOG
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS audit_log (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT,
+    action VARCHAR(50) NOT NULL,
+    entity_type VARCHAR(50) NOT NULL,
+    entity_id INT NOT NULL,
+    old_values JSON,
+    new_values JSON,
+    ip_address VARCHAR(45),
+    user_agent TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL,
+    INDEX idx_user (user_id),
+    INDEX idx_entity (entity_type, entity_id),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 14. NOTIFICATIONS
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS notifications (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL,
+    type ENUM('submission', 'review', 'acceptance', 'rejection', 'comment') NOT NULL,
+    title VARCHAR(255) NOT NULL,
+    message TEXT NOT NULL,
+    link VARCHAR(255),
+    is_read BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    INDEX idx_user (user_id),
+    INDEX idx_read (is_read),
+    INDEX idx_created_at (created_at)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ------------------------------------------------------------
+-- 15. USER_PREFERENCES
+-- ------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_preferences (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    user_id INT NOT NULL UNIQUE,
+    preferences JSON,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================================
+-- Optional: insert some initial dummy data for testing
+-- (uncomment if needed)
+-- ============================================================
+/*
+INSERT INTO journals (name, issn, publisher) VALUES
+('Nature Communications', '2041-1723', 'Nature Publishing Group'),
+('IEEE Transactions', '0018-9219', 'IEEE'),
+('Scientific Reports', '2045-2322', 'Nature Publishing Group');
+
+INSERT INTO users (name, email, password_hash, role, status) VALUES
+('Admin User', 'admin@journal.com', 'hashed_password', 'admin', 'active'),
+('Dr. Sarah Chen', 'sarah.chen@mit.edu', 'hashed_password', 'editor', 'active');
+*/
+
+-- Final check
+SHOW TABLES;
+
+these are all the tables created in db
