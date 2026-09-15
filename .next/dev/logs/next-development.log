@@ -1,2 +1,8 @@
-[00:10:33.313] Server  ERROR   ⨯ Error: ENOENT: no such file or directory, open '/home/biswaranjanpradhanofficial/VS Code/tetrons/.next/dev/server/app/page/build-manifest.json'
-[00:10:36.349] Server  LOG     ○ Compiling /_error ...
+[00:00:02.591] Server  LOG     ✓ Ready in 1719ms
+[00:00:25.703] Server  LOG     ○ Compiling / ...
+[00:00:36.928] Server  LOG     ○ Compiling /_not-found/page ...
+[00:00:43.554] Server  LOG     ✓ Finished writing to filesystem cache in 11.7s
+[00:00:59.139] Browser WARN    Detected `scroll-behavior: smooth` on the `<html>` element. To disable smooth scrolling during route transitions, add `data-scroll-behavior="smooth"` to your <html> element. Learn more: https://nextjs.org/docs/messages/missing-data-scroll-behavior
+[00:01:18.474] Browser WARN    Image with src "/ejeti.jpg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:01:18.651] Browser WARN    Image with src "/ejb.jpg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
+[00:01:18.651] Browser WARN    Image with src "/ejcmr.jpg" has either width or height modified, but not the other. If you use CSS to change the size of your image, also include the styles 'width: "auto"' or 'height: "auto"' to maintain the aspect ratio.
