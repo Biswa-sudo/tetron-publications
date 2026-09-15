@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const IssuePage = () => {
   // ---------- Dummy Volumes (for the volume dropdown) ----------
@@ -64,6 +64,14 @@ const IssuePage = () => {
     setFormErrors({});
     setIsModalOpen(true);
   };
+
+  useEffect(() => {
+    console.debug('IssuePage rendered');
+  }, []);
+
+  useEffect(() => {
+    console.debug('Issue panel open:', isModalOpen);
+  }, [isModalOpen]);
 
   const openEditModal = (index) => {
     setEditingIndex(index);
@@ -442,6 +450,40 @@ const IssuePage = () => {
           box-shadow: 0 8px 24px -6px rgba(74, 124, 247, 0.4);
         }
 
+        /* Inline panel styles */
+        .issue-page .inline-panel {
+          background: rgba(255,255,255,0.96);
+          border-radius: 1.2rem;
+          padding: 1.2rem 1.4rem;
+          margin-bottom: 1.2rem;
+          border: 1px solid rgba(0,0,0,0.04);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+          animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .issue-page .inline-panel .panel-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.8rem;
+        }
+        .issue-page .inline-panel .panel-header h2 {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #0b1a33;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .issue-page .inline-panel .form-group input,
+        .issue-page .inline-panel .form-group select {
+          padding: 0.6rem 0.9rem;
+          font-size: 0.95rem;
+          border: 1.5px solid rgba(0,0,0,0.06);
+          border-radius: 0.6rem;
+          background: rgba(255,255,255,0.6);
+          width: 100%;
+        }
+
         /* ---- Animations ---- */
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -496,9 +538,12 @@ const IssuePage = () => {
             <h1>
               <i className="fas fa-calendar-alt" aria-hidden="true"></i> Issues
             </h1>
-            <button className="add-btn" onClick={openAddModal}>
-              <i className="fas fa-plus" aria-hidden="true"></i> Add New Issue
-            </button>
+            <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+              <button type="button" className="add-btn" onClick={(e) => { console.debug('Add Issue clicked'); openAddModal(); }}>
+                <i className="fas fa-plus" aria-hidden="true"></i> Add New Issue
+              </button>
+              <div style={{fontSize: '0.9rem', color: '#7c8ca8'}}>Panel: {isModalOpen ? 'OPEN' : 'CLOSED'}</div>
+            </div>
           </div>
 
           {/* Issue List */}
@@ -533,84 +578,72 @@ const IssuePage = () => {
           </div>
         </div>
 
-        {/* Modal */}
+        {/* Inline panel (replaces modal) */}
         {isModalOpen && (
-          <div className="modal-overlay" onClick={(e) => {
-            if (e.target === e.currentTarget) closeModal();
-          }}>
-            <div className="modal" role="dialog" aria-modal="true">
-              <div className="modal-header">
-                <h2>
-                  <i className="fas fa-calendar-plus" aria-hidden="true"></i>
-                  {editingIndex === null ? 'Add New Issue' : 'Edit Issue'}
-                </h2>
-                <button className="close-btn" onClick={closeModal} aria-label="Close modal">
-                  <i className="fas fa-times" aria-hidden="true"></i>
-                </button>
+          <div className="inline-panel">
+            <div className="panel-header">
+              <h2><i className="fas fa-calendar-plus"></i> {editingIndex === null ? 'Add New Issue' : 'Edit Issue'}</h2>
+              <button className="close-btn" onClick={closeModal}><i className="fas fa-times"></i></button>
+            </div>
+
+            <form onSubmit={handleSubmit} noValidate>
+              <div className="form-group">
+                <label htmlFor="issueName">
+                  <i className="fas fa-tag" aria-hidden="true"></i> Issue Name
+                </label>
+                <input
+                  type="text"
+                  id="issueName"
+                  name="name"
+                  placeholder="e.g. Issue 3: Winter Edition"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className={formErrors.name ? 'error' : ''}
+                />
+                {formErrors.name && <div className="error-text">{formErrors.name}</div>}
               </div>
 
-              <form onSubmit={handleSubmit} noValidate>
-                {/* Issue Name */}
-                <div className="form-group">
-                  <label htmlFor="issueName">
-                    <i className="fas fa-tag" aria-hidden="true"></i> Issue Name
-                  </label>
-                  <input
-                    type="text"
-                    id="issueName"
-                    name="name"
-                    placeholder="e.g. Issue 3: Winter Edition"
-                    value={formData.name}
-                    onChange={handleInputChange}
-                    className={formErrors.name ? 'error' : ''}
-                  />
-                  {formErrors.name && <div className="error-text">{formErrors.name}</div>}
-                </div>
+              <div className="form-group">
+                <label htmlFor="volumeSelect">
+                  <i className="fas fa-book" aria-hidden="true"></i> Parent Volume
+                </label>
+                <select
+                  id="volumeSelect"
+                  name="volumeId"
+                  value={formData.volumeId}
+                  onChange={handleInputChange}
+                  className={formErrors.volumeId ? 'error' : ''}
+                >
+                  <option value="">— Select a Volume —</option>
+                  {volumes.map((vol) => (
+                    <option key={vol.id} value={vol.id}>
+                      {vol.name}
+                    </option>
+                  ))}
+                </select>
+                {formErrors.volumeId && <div className="error-text">{formErrors.volumeId}</div>}
+              </div>
 
-                {/* Volume Selection */}
-                <div className="form-group">
-                  <label htmlFor="volumeSelect">
-                    <i className="fas fa-book" aria-hidden="true"></i> Parent Volume
-                  </label>
-                  <select
-                    id="volumeSelect"
-                    name="volumeId"
-                    value={formData.volumeId}
-                    onChange={handleInputChange}
-                    className={formErrors.volumeId ? 'error' : ''}
-                  >
-                    <option value="">— Select a Volume —</option>
-                    {volumes.map((vol) => (
-                      <option key={vol.id} value={vol.id}>
-                        {vol.name}
-                      </option>
-                    ))}
-                  </select>
-                  {formErrors.volumeId && <div className="error-text">{formErrors.volumeId}</div>}
-                </div>
+              <div className="form-group">
+                <label htmlFor="issueDate">
+                  <i className="fas fa-calendar" aria-hidden="true"></i> Issue Date (Month/Year)
+                </label>
+                <input
+                  type="month"
+                  id="issueDate"
+                  name="date"
+                  value={formData.date}
+                  onChange={handleInputChange}
+                  className={formErrors.date ? 'error' : ''}
+                />
+                {formErrors.date && <div className="error-text">{formErrors.date}</div>}
+              </div>
 
-                {/* Issue Date */}
-                <div className="form-group">
-                  <label htmlFor="issueDate">
-                    <i className="fas fa-calendar" aria-hidden="true"></i> Issue Date (Month/Year)
-                  </label>
-                  <input
-                    type="month"
-                    id="issueDate"
-                    name="date"
-                    value={formData.date}
-                    onChange={handleInputChange}
-                    className={formErrors.date ? 'error' : ''}
-                  />
-                  {formErrors.date && <div className="error-text">{formErrors.date}</div>}
-                </div>
-
-                <button type="submit" className="submit-btn">
-                  <i className="fas fa-save" aria-hidden="true"></i>
-                  {editingIndex === null ? 'Create Issue' : 'Update Issue'}
-                </button>
-              </form>
-            </div>
+              <button type="submit" className="submit-btn">
+                <i className="fas fa-save" aria-hidden="true"></i>
+                {editingIndex === null ? 'Create Issue' : 'Update Issue'}
+              </button>
+            </form>
           </div>
         )}
       </div>

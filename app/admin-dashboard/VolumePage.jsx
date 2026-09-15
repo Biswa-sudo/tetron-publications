@@ -1,7 +1,8 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const VolumePage = () => {
+  console.debug('VolumePage rendered');
   // ---------- Dummy data ----------
   const initialVolumes = [
     {
@@ -45,6 +46,7 @@ const VolumePage = () => {
 
   // ---------- Handlers ----------
   const openAddModal = () => {
+    console.debug('openAddModal called');
     setEditingIndex(null);
     setFormData({ name: '', fromDate: '', toDate: '' });
     setFormErrors({});
@@ -63,10 +65,15 @@ const VolumePage = () => {
   };
 
   const closeModal = () => {
+    console.debug('closeModal called');
     setIsModalOpen(false);
     setFormData({ name: '', fromDate: '', toDate: '' });
     setFormErrors({});
   };
+
+  useEffect(() => {
+    console.debug('isModalOpen changed:', isModalOpen);
+  }, [isModalOpen]);
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -305,7 +312,7 @@ const VolumePage = () => {
           padding: 1rem;
         }
         .volume-page .modal-overlay .modal {
-          background: rgba(255, 255, 255, 0.96);
+          background: rgba(255, 255, 255, 0.98);
           backdrop-filter: blur(16px);
           -webkit-backdrop-filter: blur(16px);
           border-radius: 2rem;
@@ -315,6 +322,8 @@ const VolumePage = () => {
           box-shadow: 0 40px 80px -24px rgba(0, 0, 0, 0.3);
           border: 1px solid rgba(255, 255, 255, 0.8);
           animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+          z-index: 2147483647; /* ensure modal is on top during debugging */
+          outline: 4px solid rgba(255, 0, 0, 0.12);
         }
         .volume-page .modal-overlay .modal .modal-header {
           display: flex;
@@ -417,6 +426,54 @@ const VolumePage = () => {
           box-shadow: 0 8px 24px -6px rgba(74, 124, 247, 0.4);
         }
 
+        /* ---- Inline panel (in-place) ---- */
+        .volume-page .inline-panel {
+          background: rgba(255,255,255,0.96);
+          border-radius: 1.2rem;
+          padding: 1.2rem 1.4rem;
+          margin-bottom: 1.2rem;
+          border: 1px solid rgba(0,0,0,0.04);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+          animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .volume-page .inline-panel .panel-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.8rem;
+        }
+        .volume-page .inline-panel .panel-header h2 {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #0b1a33;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .volume-page .inline-panel .form-group input {
+          padding: 0.6rem 0.9rem;
+          font-size: 0.95rem;
+          border: 1.5px solid rgba(0,0,0,0.06);
+          border-radius: 0.6rem;
+          background: rgba(255,255,255,0.6);
+          width: 100%;
+        }
+        .volume-page .inline-panel .form-row {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 1rem;
+        }
+        .volume-page .inline-panel .submit-btn {
+          padding: 0.7rem 1rem;
+          border-radius: 0.9rem;
+          font-weight: 600;
+          background: linear-gradient(135deg, #4a7cf7, #6c5ce7);
+          color: #fff;
+          border: none;
+          cursor: pointer;
+          margin-top: 0.5rem;
+        }
+
         /* ---- Animations ---- */
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -475,57 +532,35 @@ const VolumePage = () => {
             <h1>
               <i className="fas fa-book-open" aria-hidden="true"></i> Volumes
             </h1>
-            <button className="add-btn" onClick={openAddModal}>
-              <i className="fas fa-plus" aria-hidden="true"></i> Add New Volume
-            </button>
+            <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+              <button
+                type="button"
+                className="add-btn"
+                onClick={(e) => {
+                  console.debug('Add button clicked', e?.type);
+                  openAddModal(e);
+                }}
+              >
+                <i className="fas fa-plus" aria-hidden="true"></i> Add New Volume
+              </button>
+              <div style={{fontSize: '0.9rem', color: '#7c8ca8'}} id="debug-modal-state">Modal: {isModalOpen ? 'OPEN' : 'CLOSED'}</div>
+            </div>
           </div>
 
-          {/* Volume List */}
-          <div className="volume-list">
-            {volumes.length === 0 ? (
-              <div className="empty-state">
-                <i className="fas fa-book" aria-hidden="true"></i>
-                <p>No volumes yet. Click "Add New Volume" to create one.</p>
-              </div>
-            ) : (
-              volumes.map((volume, index) => (
-                <div className="volume-item" key={volume.id}>
-                  <div className="info">
-                    <span className="name">{volume.name}</span>
-                    <span className="date-range">
-                      <i className="fas fa-calendar-alt" aria-hidden="true"></i>
-                      {formatDateDisplay(volume.fromDate)} – {formatDateDisplay(volume.toDate)}
-                    </span>
-                  </div>
-                  <div className="actions">
-                    <button className="edit-btn" onClick={() => openEditModal(index)}>
-                      <i className="fas fa-edit" aria-hidden="true"></i> Edit
-                    </button>
-                  </div>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
-
-        {/* Modal */}
-        {isModalOpen && (
-          <div className="modal-overlay" onClick={(e) => {
-            if (e.target === e.currentTarget) closeModal();
-          }}>
-            <div className="modal" role="dialog" aria-modal="true">
-              <div className="modal-header">
+          {/* Inline panel (replaces modal) */}
+          {isModalOpen && (
+            <div className="inline-panel">
+              <div className="panel-header">
                 <h2>
                   <i className="fas fa-book" aria-hidden="true"></i>
                   {editingIndex === null ? 'Add New Volume' : 'Edit Volume'}
                 </h2>
-                <button className="close-btn" onClick={closeModal} aria-label="Close modal">
+                <button className="close-btn" onClick={closeModal} aria-label="Close panel">
                   <i className="fas fa-times" aria-hidden="true"></i>
                 </button>
               </div>
 
               <form onSubmit={handleSubmit} noValidate>
-                {/* Volume Name */}
                 <div className="form-group">
                   <label htmlFor="volumeName">
                     <i className="fas fa-tag" aria-hidden="true"></i> Volume Name
@@ -542,7 +577,6 @@ const VolumePage = () => {
                   {formErrors.name && <div className="error-text">{formErrors.name}</div>}
                 </div>
 
-                {/* From & To Date */}
                 <div className="form-row">
                   <div className="form-group">
                     <label htmlFor="fromDate">
@@ -580,8 +614,37 @@ const VolumePage = () => {
                 </button>
               </form>
             </div>
+          )}
+
+          {/* Volume List */}
+          <div className="volume-list">
+            {volumes.length === 0 ? (
+              <div className="empty-state">
+                <i className="fas fa-book" aria-hidden="true"></i>
+                <p>No volumes yet. Click "Add New Volume" to create one.</p>
+              </div>
+            ) : (
+              volumes.map((volume, index) => (
+                <div className="volume-item" key={volume.id}>
+                  <div className="info">
+                    <span className="name">{volume.name}</span>
+                    <span className="date-range">
+                      <i className="fas fa-calendar-alt" aria-hidden="true"></i>
+                      {formatDateDisplay(volume.fromDate)} – {formatDateDisplay(volume.toDate)}
+                    </span>
+                  </div>
+                  <div className="actions">
+                    <button className="edit-btn" onClick={() => openEditModal(index)}>
+                      <i className="fas fa-edit" aria-hidden="true"></i> Edit
+                    </button>
+                  </div>
+                </div>
+              ))
+            )}
           </div>
-        )}
+        </div>
+
+        {/* (modal removed — inline panel used instead) */}
       </div>
     </>
   );

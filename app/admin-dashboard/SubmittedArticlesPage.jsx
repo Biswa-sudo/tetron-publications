@@ -63,8 +63,10 @@ const SubmittedArticlesPage = () => {
   ];
 
   // ---------- State ----------
-  const [articles] = useState(initialArticles);
+  const [articles, setArticles] = useState(initialArticles);
   const [searchTerm, setSearchTerm] = useState('');
+  const [editingIndex, setEditingIndex] = useState(null);
+  const [editForm, setEditForm] = useState({ userName: '', articleTitle: '', journal: '', submittedDate: '', fileName: '' });
 
   // ---------- Filter logic (includes journal) ----------
   const filteredArticles = articles.filter((article) =>
@@ -83,6 +85,47 @@ const SubmittedArticlesPage = () => {
   const handleDownload = (fileName, articleTitle) => {
     // In a real app, this would trigger a file download from a server.
     alert(`Downloading "${articleTitle}" (${fileName})`);
+  };
+
+  // ---------- Edit handlers ----------
+  const openEdit = (index) => {
+    const a = articles[index];
+    setEditingIndex(index);
+    setEditForm({
+      userName: a.userName,
+      articleTitle: a.articleTitle,
+      journal: a.journal,
+      submittedDate: a.submittedDate,
+      fileName: a.fileName,
+    });
+    // scroll into view optionally
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  const closeEdit = () => {
+    setEditingIndex(null);
+    setEditForm({ userName: '', articleTitle: '', journal: '', submittedDate: '', fileName: '' });
+  };
+
+  const handleEditChange = (e) => {
+    const { name, value } = e.target;
+    setEditForm((p) => ({ ...p, [name]: value }));
+  };
+
+  const handleEditSubmit = (e) => {
+    e.preventDefault();
+    if (editingIndex === null) return;
+    const updated = [...articles];
+    updated[editingIndex] = {
+      ...updated[editingIndex],
+      userName: editForm.userName,
+      articleTitle: editForm.articleTitle,
+      journal: editForm.journal,
+      submittedDate: editForm.submittedDate,
+      fileName: editForm.fileName,
+    };
+    setArticles(updated);
+    closeEdit();
   };
 
   return (
@@ -172,6 +215,19 @@ const SubmittedArticlesPage = () => {
         }
         .submitted-articles-page .filters input::placeholder {
           color: #9aabbf;
+        }
+        .submitted-articles-page .edit-btn {
+          background: none;
+          border: 1px solid rgba(0,0,0,0.06);
+          color: #4a7cf7;
+          padding: 0.35rem 0.6rem;
+          border-radius: 0.6rem;
+          cursor: pointer;
+          font-weight: 600;
+        }
+        .submitted-articles-page .edit-btn:hover {
+          background: rgba(74,124,247,0.06);
+          color: #3b6de7;
         }
         .submitted-articles-page .table-container {
           overflow-x: auto;
@@ -320,6 +376,39 @@ const SubmittedArticlesPage = () => {
             />
           </div>
 
+          {/* Inline edit panel */}
+          {editingIndex !== null && (
+            <div className="inline-panel">
+              <div className="panel-header">
+                <h2><i className="fas fa-edit"></i> Edit Article</h2>
+                <button className="close-btn" onClick={closeEdit}><i className="fas fa-times"></i></button>
+              </div>
+              <form onSubmit={handleEditSubmit} className="admin-form">
+                <div className="form-group">
+                  <label>User Name</label>
+                  <input name="userName" value={editForm.userName} onChange={handleEditChange} />
+                </div>
+                <div className="form-group">
+                  <label>Article Title</label>
+                  <input name="articleTitle" value={editForm.articleTitle} onChange={handleEditChange} />
+                </div>
+                <div className="form-group">
+                  <label>Journal</label>
+                  <input name="journal" value={editForm.journal} onChange={handleEditChange} />
+                </div>
+                <div className="form-group">
+                  <label>Submitted Date</label>
+                  <input name="submittedDate" type="date" value={editForm.submittedDate} onChange={handleEditChange} />
+                </div>
+                <div className="form-group">
+                  <label>File Name</label>
+                  <input name="fileName" value={editForm.fileName} onChange={handleEditChange} />
+                </div>
+                <button type="submit" className="submit-btn">Save Changes</button>
+              </form>
+            </div>
+          )}
+
           {/* Article Table */}
           <div className="table-container">
             {filteredArticles.length === 0 ? (
@@ -335,7 +424,7 @@ const SubmittedArticlesPage = () => {
                     <th>User Name</th>
                     <th>Article Title</th>
                     <th>Journal</th>
-                    <th>Download</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -348,14 +437,19 @@ const SubmittedArticlesPage = () => {
                         <span className="journal-badge">{article.journal}</span>
                       </td>
                       <td>
-                        <button
-                          className="download-btn"
-                          onClick={() => handleDownload(article.fileName, article.articleTitle)}
-                          aria-label={`Download ${article.articleTitle}`}
-                        >
-                          <i className="fas fa-download" aria-hidden="true"></i>
-                          <span className="download-text">Download</span>
-                        </button>
+                        <div style={{display: 'flex', gap: '0.5rem', alignItems: 'center'}}>
+                          <button className="edit-btn" onClick={() => openEdit(articles.findIndex(a => a.id === article.id))} aria-label={`Edit ${article.articleTitle}`}>
+                            <i className="fas fa-edit" aria-hidden="true"></i> Edit
+                          </button>
+                          <button
+                            className="download-btn"
+                            onClick={() => handleDownload(article.fileName, article.articleTitle)}
+                            aria-label={`Download ${article.articleTitle}`}
+                          >
+                            <i className="fas fa-download" aria-hidden="true"></i>
+                            <span className="download-text">Download</span>
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}

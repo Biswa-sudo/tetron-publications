@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const EditorPage = () => {
   // ---------- Dummy data ----------
@@ -95,6 +95,10 @@ const EditorPage = () => {
     setFormErrors({});
     setIsModalOpen(true);
   };
+
+  useEffect(() => {
+    console.debug('EditorPage rendered; isModalOpen=', isModalOpen);
+  }, [isModalOpen]);
 
   const openEditModal = (index) => {
     console.log('Opening edit modal for index:', index);
@@ -505,6 +509,40 @@ const EditorPage = () => {
           box-shadow: 0 8px 24px -6px rgba(74, 124, 247, 0.4);
         }
 
+        /* Inline panel styles */
+        .editor-page .inline-panel {
+          background: rgba(255,255,255,0.96);
+          border-radius: 1.2rem;
+          padding: 1.2rem 1.4rem;
+          margin-bottom: 1.2rem;
+          border: 1px solid rgba(0,0,0,0.04);
+          box-shadow: 0 8px 30px rgba(0,0,0,0.04);
+          animation: slideUp 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .editor-page .inline-panel .panel-header {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          margin-bottom: 0.8rem;
+        }
+        .editor-page .inline-panel .panel-header h2 {
+          font-size: 1.1rem;
+          font-weight: 700;
+          color: #0b1a33;
+          display: flex;
+          align-items: center;
+          gap: 0.5rem;
+        }
+        .editor-page .inline-panel .form-group input,
+        .editor-page .inline-panel .form-group select {
+          padding: 0.6rem 0.9rem;
+          font-size: 0.95rem;
+          border: 1.5px solid rgba(0,0,0,0.06);
+          border-radius: 0.6rem;
+          background: rgba(255,255,255,0.6);
+          width: 100%;
+        }
+
         /* ---- Animations ---- */
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -566,9 +604,12 @@ const EditorPage = () => {
             <h1>
               <i className="fas fa-user-edit" aria-hidden="true"></i> Editorial Board
             </h1>
-            <button className="add-btn" onClick={openAddModal}>
-              <i className="fas fa-plus" aria-hidden="true"></i> Add Editor
-            </button>
+            <div style={{display: 'flex', alignItems: 'center', gap: '1rem'}}>
+              <button type="button" className="add-btn" onClick={() => { console.debug('Add Editor clicked'); openAddModal(); }}>
+                <i className="fas fa-plus" aria-hidden="true"></i> Add Editor
+              </button>
+              <div style={{fontSize: '0.9rem', color: '#7c8ca8'}}>Panel: {isModalOpen ? 'OPEN' : 'CLOSED'}</div>
+            </div>
           </div>
 
           {/* Editor List */}
@@ -611,172 +652,163 @@ const EditorPage = () => {
           </div>
         </div>
 
-        {/* Modal */}
+        {/* Inline panel (replaces modal) */}
         {isModalOpen && (
-          <div className="modal-overlay" onClick={(e) => {
-            if (e.target === e.currentTarget) closeModal();
-          }}>
-            <div className="modal" role="dialog" aria-modal="true">
-              <div className="modal-header">
-                <h2>
-                  <i className="fas fa-user-plus" aria-hidden="true"></i>
-                  {editingIndex === null ? 'Add New Editor' : 'Edit Editor'}
-                </h2>
-                <button className="close-btn" onClick={closeModal} aria-label="Close modal">
-                  <i className="fas fa-times" aria-hidden="true"></i>
-                </button>
+          <div className="inline-panel">
+            <div className="panel-header">
+              <h2><i className="fas fa-user-plus" aria-hidden="true"></i> {editingIndex === null ? 'Add New Editor' : 'Edit Editor'}</h2>
+              <button className="close-btn" onClick={closeModal} aria-label="Close panel"><i className="fas fa-times"></i></button>
+            </div>
+
+            <form onSubmit={handleSubmit} noValidate>
+              {/* Name */}
+              <div className="form-group">
+                <label htmlFor="editorName">
+                  <i className="fas fa-user" aria-hidden="true"></i> Full Name
+                </label>
+                <input
+                  type="text"
+                  id="editorName"
+                  name="name"
+                  placeholder="e.g. Dr. John Doe"
+                  value={formData.name}
+                  onChange={handleInputChange}
+                  className={formErrors.name ? 'error' : ''}
+                />
+                {formErrors.name && <div className="error-text">{formErrors.name}</div>}
               </div>
 
-              <form onSubmit={handleSubmit} noValidate>
-                {/* Name */}
+              {/* Role (dropdown) */}
+              <div className="form-group">
+                <label htmlFor="role">
+                  <i className="fas fa-user-tag" aria-hidden="true"></i> Role
+                </label>
+                <select
+                  id="role"
+                  name="role"
+                  value={formData.role}
+                  onChange={handleInputChange}
+                  className={formErrors.role ? 'error' : ''}
+                >
+                  <option value="">— Select Role —</option>
+                  <option value="Editor">Editor</option>
+                  <option value="Chief Editor">Chief Editor</option>
+                  <option value="Editor-in-Chief">Editor-in-Chief</option>
+                  <option value="Associate Editor">Associate Editor</option>
+                </select>
+                {formErrors.role && <div className="error-text">{formErrors.role}</div>}
+              </div>
+
+              {/* Scale */}
+              <div className="form-group">
+                <label htmlFor="scale">
+                  <i className="fas fa-ruler" aria-hidden="true"></i> Scale
+                </label>
+                <input
+                  type="text"
+                  id="scale"
+                  name="scale"
+                  placeholder="e.g. Senior, Lead, Junior"
+                  value={formData.scale}
+                  onChange={handleInputChange}
+                  className={formErrors.scale ? 'error' : ''}
+                />
+                {formErrors.scale && <div className="error-text">{formErrors.scale}</div>}
+              </div>
+
+              {/* Affiliation */}
+              <div className="form-group">
+                <label htmlFor="affiliation">
+                  <i className="fas fa-briefcase" aria-hidden="true"></i> Affiliation
+                </label>
+                <input
+                  type="text"
+                  id="affiliation"
+                  name="affiliation"
+                  placeholder="e.g. Harvard University"
+                  value={formData.affiliation}
+                  onChange={handleInputChange}
+                  className={formErrors.affiliation ? 'error' : ''}
+                />
+                {formErrors.affiliation && <div className="error-text">{formErrors.affiliation}</div>}
+              </div>
+
+              {/* Email */}
+              <div className="form-group">
+                <label htmlFor="email">
+                  <i className="fas fa-envelope" aria-hidden="true"></i> Email
+                </label>
+                <input
+                  type="email"
+                  id="email"
+                  name="email"
+                  placeholder="editor@university.edu"
+                  value={formData.email}
+                  onChange={handleInputChange}
+                  className={formErrors.email ? 'error' : ''}
+                />
+                {formErrors.email && <div className="error-text">{formErrors.email}</div>}
+              </div>
+
+              {/* Journal - new field */}
+              <div className="form-group">
+                <label htmlFor="journal">
+                  <i className="fas fa-newspaper" aria-hidden="true"></i> Journal
+                </label>
+                <select
+                  id="journal"
+                  name="journal"
+                  value={formData.journal}
+                  onChange={handleInputChange}
+                  className={formErrors.journal ? 'error' : ''}
+                >
+                  <option value="">— Select Journal —</option>
+                  {journalOptions.map((j) => (
+                    <option key={j} value={j}>{j}</option>
+                  ))}
+                </select>
+                {formErrors.journal && <div className="error-text">{formErrors.journal}</div>}
+              </div>
+
+              {/* Country & Institution in a row */}
+              <div className="form-row">
                 <div className="form-group">
-                  <label htmlFor="editorName">
-                    <i className="fas fa-user" aria-hidden="true"></i> Full Name
+                  <label htmlFor="country">
+                    <i className="fas fa-globe" aria-hidden="true"></i> Country
                   </label>
                   <input
                     type="text"
-                    id="editorName"
-                    name="name"
-                    placeholder="e.g. Dr. John Doe"
-                    value={formData.name}
+                    id="country"
+                    name="country"
+                    placeholder="e.g. USA"
+                    value={formData.country}
                     onChange={handleInputChange}
-                    className={formErrors.name ? 'error' : ''}
+                    className={formErrors.country ? 'error' : ''}
                   />
-                  {formErrors.name && <div className="error-text">{formErrors.name}</div>}
+                  {formErrors.country && <div className="error-text">{formErrors.country}</div>}
                 </div>
-
-                {/* Role (dropdown) */}
                 <div className="form-group">
-                  <label htmlFor="role">
-                    <i className="fas fa-user-tag" aria-hidden="true"></i> Role
-                  </label>
-                  <select
-                    id="role"
-                    name="role"
-                    value={formData.role}
-                    onChange={handleInputChange}
-                    className={formErrors.role ? 'error' : ''}
-                  >
-                    <option value="">— Select Role —</option>
-                    <option value="Editor">Editor</option>
-                    <option value="Chief Editor">Chief Editor</option>
-                    <option value="Editor-in-Chief">Editor-in-Chief</option>
-                    <option value="Associate Editor">Associate Editor</option>
-                  </select>
-                  {formErrors.role && <div className="error-text">{formErrors.role}</div>}
-                </div>
-
-                {/* Scale */}
-                <div className="form-group">
-                  <label htmlFor="scale">
-                    <i className="fas fa-ruler" aria-hidden="true"></i> Scale
+                  <label htmlFor="institution">
+                    <i className="fas fa-university" aria-hidden="true"></i> Institution
                   </label>
                   <input
                     type="text"
-                    id="scale"
-                    name="scale"
-                    placeholder="e.g. Senior, Lead, Junior"
-                    value={formData.scale}
+                    id="institution"
+                    name="institution"
+                    placeholder="e.g. MIT"
+                    value={formData.institution}
                     onChange={handleInputChange}
-                    className={formErrors.scale ? 'error' : ''}
+                    className={formErrors.institution ? 'error' : ''}
                   />
-                  {formErrors.scale && <div className="error-text">{formErrors.scale}</div>}
+                  {formErrors.institution && <div className="error-text">{formErrors.institution}</div>}
                 </div>
+              </div>
 
-                {/* Affiliation */}
-                <div className="form-group">
-                  <label htmlFor="affiliation">
-                    <i className="fas fa-briefcase" aria-hidden="true"></i> Affiliation
-                  </label>
-                  <input
-                    type="text"
-                    id="affiliation"
-                    name="affiliation"
-                    placeholder="e.g. Harvard University"
-                    value={formData.affiliation}
-                    onChange={handleInputChange}
-                    className={formErrors.affiliation ? 'error' : ''}
-                  />
-                  {formErrors.affiliation && <div className="error-text">{formErrors.affiliation}</div>}
-                </div>
-
-                {/* Email */}
-                <div className="form-group">
-                  <label htmlFor="email">
-                    <i className="fas fa-envelope" aria-hidden="true"></i> Email
-                  </label>
-                  <input
-                    type="email"
-                    id="email"
-                    name="email"
-                    placeholder="editor@university.edu"
-                    value={formData.email}
-                    onChange={handleInputChange}
-                    className={formErrors.email ? 'error' : ''}
-                  />
-                  {formErrors.email && <div className="error-text">{formErrors.email}</div>}
-                </div>
-
-                {/* Journal - new field */}
-                <div className="form-group">
-                  <label htmlFor="journal">
-                    <i className="fas fa-newspaper" aria-hidden="true"></i> Journal
-                  </label>
-                  <select
-                    id="journal"
-                    name="journal"
-                    value={formData.journal}
-                    onChange={handleInputChange}
-                    className={formErrors.journal ? 'error' : ''}
-                  >
-                    <option value="">— Select Journal —</option>
-                    {journalOptions.map((j) => (
-                      <option key={j} value={j}>{j}</option>
-                    ))}
-                  </select>
-                  {formErrors.journal && <div className="error-text">{formErrors.journal}</div>}
-                </div>
-
-                {/* Country & Institution in a row */}
-                <div className="form-row">
-                  <div className="form-group">
-                    <label htmlFor="country">
-                      <i className="fas fa-globe" aria-hidden="true"></i> Country
-                    </label>
-                    <input
-                      type="text"
-                      id="country"
-                      name="country"
-                      placeholder="e.g. USA"
-                      value={formData.country}
-                      onChange={handleInputChange}
-                      className={formErrors.country ? 'error' : ''}
-                    />
-                    {formErrors.country && <div className="error-text">{formErrors.country}</div>}
-                  </div>
-                  <div className="form-group">
-                    <label htmlFor="institution">
-                      <i className="fas fa-university" aria-hidden="true"></i> Institution
-                    </label>
-                    <input
-                      type="text"
-                      id="institution"
-                      name="institution"
-                      placeholder="e.g. MIT"
-                      value={formData.institution}
-                      onChange={handleInputChange}
-                      className={formErrors.institution ? 'error' : ''}
-                    />
-                    {formErrors.institution && <div className="error-text">{formErrors.institution}</div>}
-                  </div>
-                </div>
-
-                <button type="submit" className="submit-btn">
-                  <i className="fas fa-save" aria-hidden="true"></i>
-                  {editingIndex === null ? 'Add Editor' : 'Update Editor'}
-                </button>
-              </form>
-            </div>
+              <button type="submit" className="submit-btn">
+                <i className="fas fa-save" aria-hidden="true"></i>
+                {editingIndex === null ? 'Add Editor' : 'Update Editor'}
+              </button>
+            </form>
           </div>
         )}
       </div>

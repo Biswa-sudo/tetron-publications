@@ -75,8 +75,18 @@ const AdminDashboard = () => {
             <div className="quick-actions">
               <h3>Quick Actions</h3>
               <div className="action-grid">
-                {navItems.map((item) => (
-                  item.href ? (
+                {navItems.map((item) => {
+                  const quickInline = ['create-issue', 'add-editor'].includes(item.id);
+                  if (quickInline) {
+                    return (
+                      <button key={item.id} className="action-btn" onClick={() => openInline(item.id)}>
+                        <i className={`fas ${item.icon}`}></i>
+                        <span>{item.label}</span>
+                      </button>
+                    );
+                  }
+
+                  return item.href ? (
                     <Link key={item.id} href={item.href}>
                       <button className="action-btn">
                         <i className={`fas ${item.icon}`}></i>
@@ -92,8 +102,8 @@ const AdminDashboard = () => {
                       <i className={`fas ${item.icon}`}></i>
                       <span>{item.label}</span>
                     </button>
-                  )
-                ))}
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -347,6 +357,14 @@ const AdminDashboard = () => {
         return <div>Select an option from the sidebar.</div>;
     }
   };
+
+  // Inline panel state (for quick actions)
+  const [inlinePanel, setInlinePanel] = useState(null); // 'create-issue' | 'add-editor' | null
+  const openInline = (id) => {
+    setInlinePanel(id);
+    setActiveSection(id);
+  };
+  const closeInline = () => setInlinePanel(null);
 
   return (
     <>
@@ -953,6 +971,79 @@ const AdminDashboard = () => {
               </button>
             </div>
           </div>
+
+          {/* Inline panels for quick actions */}
+          {inlinePanel === 'create-issue' && (
+            <div className="inline-panel">
+              <div className="panel-header">
+                <h2><i className="fas fa-calendar-alt"></i> Create New Issue</h2>
+                <button className="close-btn" onClick={closeInline}><i className="fas fa-times"></i></button>
+              </div>
+              <p>Add a new issue to an existing volume.</p>
+              <form className="admin-form" onSubmit={(e) => { e.preventDefault(); closeInline(); }}>
+                <div className="form-group">
+                  <label htmlFor="issueVolume">Select Volume</label>
+                  <select id="issueVolume">
+                    <option value="">— Select Volume —</option>
+                    <option value="15">Volume 15 (2026)</option>
+                    <option value="14">Volume 14 (2025)</option>
+                    <option value="13">Volume 13 (2025)</option>
+                  </select>
+                </div>
+                <div className="form-group">
+                  <label htmlFor="issueNumber">Issue Number</label>
+                  <input type="text" id="issueNumber" placeholder="e.g. 2" />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="issueDate">Publication Date</label>
+                  <input type="date" id="issueDate" />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="issueDescription">Description</label>
+                  <textarea id="issueDescription" rows="3" placeholder="Brief description of this issue..."></textarea>
+                </div>
+                <button type="submit" className="submit-btn"><i className="fas fa-plus"></i> Create Issue</button>
+              </form>
+            </div>
+          )}
+
+          {inlinePanel === 'add-editor' && (
+            <div className="inline-panel">
+              <div className="panel-header">
+                <h2><i className="fas fa-user-edit"></i> Add New Editor</h2>
+                <button className="close-btn" onClick={closeInline}><i className="fas fa-times"></i></button>
+              </div>
+              <p>Add a new editor to the editorial board.</p>
+              <form className="admin-form" onSubmit={(e) => { e.preventDefault(); closeInline(); }}>
+                <div className="form-group">
+                  <label htmlFor="editorName">Full Name</label>
+                  <input type="text" id="editorName" placeholder="e.g. Dr. Robert Smith" />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="editorEmail">Email</label>
+                  <input type="email" id="editorEmail" placeholder="editor@university.edu" />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="editorUniversity">University / Affiliation</label>
+                  <input type="text" id="editorUniversity" placeholder="e.g. Harvard University" />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="editorSpecialty">Area of Expertise</label>
+                  <input type="text" id="editorSpecialty" placeholder="e.g. Computer Science, AI" />
+                </div>
+                <div className="form-group">
+                  <label htmlFor="editorRole">Role</label>
+                  <select id="editorRole">
+                    <option value="">— Select Role —</option>
+                    <option value="editor-in-chief">Editor-in-Chief</option>
+                    <option value="associate-editor">Associate Editor</option>
+                    <option value="section-editor">Section Editor</option>
+                  </select>
+                </div>
+                <button type="submit" className="submit-btn"><i className="fas fa-plus"></i> Add Editor</button>
+              </form>
+            </div>
+          )}
 
           {renderContent()}
         </main>
