@@ -94,7 +94,7 @@ export default function LoginPage() {
           {/* Header */}
           <div className="login-header">
             <Link href="/" className="login-logo">
-              <img src="/tetron.png" alt="Tetron Publications" />
+              <img src="/tetron.png" alt="Tetron Publications" width="80%" />
             </Link>
             <h2>Welcome Back</h2>
             <p className="text-muted">Sign in to your account to continue</p>
@@ -281,6 +281,8 @@ export default function LoginPage() {
         .login-logo img {
           height: 60px;
           width: auto;
+                    width: 80%;
+
         }
 
         .login-header h2 {
@@ -577,6 +579,7 @@ export default function LoginPage() {
 
           .login-logo img {
             height: 50px;
+
           }
         }
       `}</style>
