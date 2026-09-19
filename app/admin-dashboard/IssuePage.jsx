@@ -108,27 +108,66 @@ const IssuePage = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const newIssue = {
-      id: Date.now(),
+    const payload = {
       name: formData.name.trim(),
-      volumeId: parseInt(formData.volumeId, 10),
+      volume_id: parseInt(formData.volumeId, 10),
       date: formData.date,
     };
 
-    if (editingIndex === null) {
-      // Add new issue
-      setIssues([...issues, newIssue]);
-    } else {
-      // Edit existing issue
-      const updatedIssues = [...issues];
-      updatedIssues[editingIndex] = newIssue;
-      setIssues(updatedIssues);
+    const isEdit = editingIndex !== null;
+    const issueId = isEdit ? issues[editingIndex].id : null;
+    const phpBaseUrl = 'https://tetronspublications.com/journal_php_backend';
+    const apiUrl = isEdit
+      ? `${phpBaseUrl}/api/issues.php?action=update&id=${issueId}`
+      : `${phpBaseUrl}/api/issues.php?action=create`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const rawText = await response.text();
+      let result = {};
+      try {
+        result = rawText ? JSON.parse(rawText) : {};
+      } catch {
+        throw new Error(rawText || 'Server returned an empty or invalid response.');
+      }
+
+      if (!response.ok || !result.success) {
+        const message = result.errors ? result.errors.join(', ') : (result.error || 'Failed to save issue.');
+        throw new Error(message);
+      }
+
+      const savedIssue = {
+        id: isEdit ? issueId : result.id,
+        name: payload.name,
+        volumeId: payload.volume_id,
+        date: payload.date,
+      };
+
+      if (isEdit) {
+        const updatedIssues = [...issues];
+        updatedIssues[editingIndex] = savedIssue;
+        setIssues(updatedIssues);
+      } else {
+        setIssues((prev) => [...prev, savedIssue]);
+      }
+
+      closeModal();
+    } catch (error) {
+      console.error('Issue save failed:', error);
+      alert(error.message || 'Could not save issue.');
     }
-    closeModal();
   };
 
   const getVolumeName = (volumeId) => {

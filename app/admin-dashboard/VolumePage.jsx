@@ -96,31 +96,66 @@ const VolumePage = () => {
     return Object.keys(errors).length === 0;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    if (editingIndex === null) {
-      // Add new volume
-      const newVolume = {
-        id: Date.now(), // simple unique id
-        name: formData.name.trim(),
-        fromDate: formData.fromDate,
-        toDate: formData.toDate,
+    const payload = {
+      name: formData.name.trim(),
+      fromDate: formData.fromDate,
+      toDate: formData.toDate,
+    };
+
+    const isEdit = editingIndex !== null;
+    const volumeId = isEdit ? volumes[editingIndex].id : null;
+    const phpBaseUrl = 'https://tetronspublications.com/journal_php_backend';
+    const apiUrl = isEdit
+      ? `${phpBaseUrl}/api/volumes.php?action=update&id=${volumeId}`
+      : `${phpBaseUrl}/api/volumes.php?action=create`;
+
+    try {
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Accept: 'application/json',
+        },
+        body: JSON.stringify(payload),
+      });
+
+      const rawText = await response.text();
+      let result = {};
+      try {
+        result = rawText ? JSON.parse(rawText) : {};
+      } catch {
+        throw new Error(rawText || 'Server returned an empty or invalid response.');
+      }
+
+      if (!response.ok || !result.success) {
+        const message = result.errors ? result.errors.join(', ') : (result.error || 'Failed to save volume.');
+        throw new Error(message);
+      }
+
+      const savedVolume = {
+        id: isEdit ? volumeId : result.id,
+        name: payload.name,
+        fromDate: payload.fromDate,
+        toDate: payload.toDate,
       };
-      setVolumes([...volumes, newVolume]);
-    } else {
-      // Edit existing volume
-      const updatedVolumes = [...volumes];
-      updatedVolumes[editingIndex] = {
-        ...updatedVolumes[editingIndex],
-        name: formData.name.trim(),
-        fromDate: formData.fromDate,
-        toDate: formData.toDate,
-      };
-      setVolumes(updatedVolumes);
+
+      if (isEdit) {
+        const updatedVolumes = [...volumes];
+        updatedVolumes[editingIndex] = savedVolume;
+        setVolumes(updatedVolumes);
+      } else {
+        setVolumes((prev) => [...prev, savedVolume]);
+      }
+
+      closeModal();
+    } catch (error) {
+      console.error('Volume save failed:', error);
+      alert(error.message || 'Could not save volume.');
     }
-    closeModal();
   };
 
   const formatDateDisplay = (dateStr) => {

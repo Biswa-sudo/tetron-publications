@@ -1,0 +1,17 @@
+-- Migration: Create articles table
+CREATE TABLE IF NOT EXISTS articles (
+  id BIGINT UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  title VARCHAR(512) NOT NULL,
+  abstract TEXT,
+  authors TEXT,
+  file_path VARCHAR(1024) DEFAULT NULL,
+  volume_id BIGINT UNSIGNED DEFAULT NULL,
+  issue_id BIGINT UNSIGNED DEFAULT NULL,
+  status VARCHAR(32) NOT NULL DEFAULT 'submitted',
+  submitted_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  INDEX idx_volume_id (volume_id),
+  INDEX idx_issue_id (issue_id),
+  CONSTRAINT fk_articles_volume FOREIGN KEY (volume_id) REFERENCES volumes(id) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT fk_articles_issue FOREIGN KEY (issue_id) REFERENCES issues(id) ON DELETE SET NULL ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

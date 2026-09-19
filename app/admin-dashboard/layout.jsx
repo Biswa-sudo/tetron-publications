@@ -8,7 +8,7 @@ const navItems = [
   { id: 'articles', label: 'Submitted Articles', icon: 'fa-file-alt', href: '/admin-dashboard/submitted-articles' },
   { id: 'create-volume', label: 'Create Or Edit Volume', icon: 'fa-book', href: '/admin-dashboard/volumes' },
   { id: 'create-issue', label: 'Create Or Edit Issue', icon: 'fa-calendar-alt', href: '/admin-dashboard/issues' },
-  { id: 'add-article', label: 'Add Or Edit Article', icon: 'fa-plus-circle', href: '/admin-dashboard/add-article' },
+  { id: 'add-article', label: 'Add New Article', icon: 'fa-plus-circle', href: '/admin-dashboard/add-article' },
   { id: 'add-editor', label: 'Add Or Edit Editor', icon: 'fa-user-edit', href: '/admin-dashboard/editors' },
 ];
 
