@@ -1,29 +1,11 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
 const AddArticlePage = () => {
-  // ---------- Dummy data ----------
-  const volumes = [
-    { id: 1, name: 'Volume 1: Foundations (2024)' },
-    { id: 2, name: 'Volume 2: Advances in AI (2024)' },
-    { id: 3, name: 'Volume 3: Sustainable Systems (2025)' },
-    { id: 4, name: 'Volume 4: Quantum Horizons (2025)' },
-  ];
-
-  const issues = [
-    { id: 101, name: 'Issue 1: Inaugural Edition', volumeId: 1 },
-    { id: 102, name: 'Issue 2: Spring Collection', volumeId: 1 },
-    { id: 201, name: 'Issue 1: AI Revolution', volumeId: 2 },
-    { id: 301, name: 'Issue 1: Green Energy', volumeId: 3 },
-    { id: 401, name: 'Issue 1: Quantum Leap', volumeId: 4 },
-  ];
-
-  const dummyJournals = [
-    'Journal of Advanced Research',
-    'International Journal of Science',
-    'Nature Communications',
-    'Scientific Reports',
-  ];
+  // ---------- Data loaded from backend ----------
+  const [volumes, setVolumes] = useState([]);
+  const [issues, setIssues] = useState([]);
+  const [journalOptions, setJournalOptions] = useState([]);
 
   const articleTypes = ['Research Article', 'Review', 'Case Study', 'Short Communication', 'Editorial', 'Book Review'];
 
@@ -54,6 +36,60 @@ const AddArticlePage = () => {
   });
 
   const [formErrors, setFormErrors] = useState({});
+
+  // Fetch volumes, issues and journals on mount
+  useEffect(() => {
+    const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
+
+    const fetchVolumes = async () => {
+      try {
+        const resp = await fetch(`${phpBaseUrl}/api/volumes.php?action=list`, { headers: { Accept: 'application/json' } });
+        const raw = await resp.text();
+        const result = raw ? JSON.parse(raw) : {};
+        if (resp.ok && result.success) {
+          setVolumes(result.data || []);
+        } else {
+          console.error('Failed to load volumes', resp.status, result);
+        }
+      } catch (err) {
+        console.error('Error fetching volumes', err);
+      }
+    };
+
+    const fetchIssues = async () => {
+      try {
+        const resp = await fetch(`${phpBaseUrl}/api/issues.php?action=list`, { headers: { Accept: 'application/json' } });
+        const raw = await resp.text();
+        const result = raw ? JSON.parse(raw) : {};
+        if (resp.ok && result.success) {
+          setIssues(result.data || []);
+        } else {
+          console.error('Failed to load issues', resp.status, result);
+        }
+      } catch (err) {
+        console.error('Error fetching issues', err);
+      }
+    };
+
+    const fetchJournals = async () => {
+      try {
+        const resp = await fetch(`${phpBaseUrl}/api/journals.php?action=list`, { headers: { Accept: 'application/json' } });
+        const raw = await resp.text();
+        const result = raw ? JSON.parse(raw) : {};
+        if (resp.ok && result.success) {
+          setJournalOptions((result.data || []).map((r) => r.name));
+        } else {
+          console.error('Failed to load journals', resp.status, result);
+        }
+      } catch (err) {
+        console.error('Error fetching journals', err);
+      }
+    };
+
+    fetchVolumes();
+    fetchIssues();
+    fetchJournals();
+  }, []);
 
   // ---------- Handlers ----------
   const handleInputChange = (e) => {
@@ -119,8 +155,11 @@ const AddArticlePage = () => {
     // In real app, you'd generate a DOI link or shareable URL
   };
 
-  // Filter issues based on selected volume
-  const filteredIssues = issues.filter((issue) => issue.volumeId === parseInt(formData.volume));
+  // Filter issues based on selected volume (handle both `volumeId` and `volume_id` keys)
+  const filteredIssues = issues.filter((issue) => {
+    const vid = issue.volumeId ?? issue.volume_id ?? issue.volume;
+    return vid && parseInt(vid, 10) === parseInt(formData.volume, 10);
+  });
 
   return (
     <>
@@ -482,18 +521,22 @@ const AddArticlePage = () => {
               <div className="form-group">
                 <label><i className="fas fa-newspaper"></i> Journals</label>
                 <div className="checkbox-group">
-                  {dummyJournals.map((journal) => (
-                    <label key={journal}>
-                      <input
-                        type="checkbox"
-                        name="selectedJournals"
-                        value={journal}
-                        checked={formData.selectedJournals.includes(journal)}
-                        onChange={handleInputChange}
-                      />
-                      <span>{journal}</span>
-                    </label>
-                  ))}
+                  {journalOptions.length === 0 ? (
+                    <div style={{ color: '#7c8ca8' }}>Loading journals...</div>
+                  ) : (
+                    journalOptions.map((journal) => (
+                      <label key={journal}>
+                        <input
+                          type="checkbox"
+                          name="selectedJournals"
+                          value={journal}
+                          checked={formData.selectedJournals.includes(journal)}
+                          onChange={handleInputChange}
+                        />
+                        <span>{journal}</span>
+                      </label>
+                    ))
+                  )}
                 </div>
                 {formErrors.selectedJournals && <div className="error-text">{formErrors.selectedJournals}</div>}
               </div>

@@ -2,50 +2,9 @@
 import React, { useState, useEffect } from 'react';
 
 const IssuePage = () => {
-  // ---------- Dummy Volumes (for the volume dropdown) ----------
-  const volumes = [
-    { id: 1, name: 'Volume 1: Foundations' },
-    { id: 2, name: 'Volume 2: Advances in AI' },
-    { id: 3, name: 'Volume 3: Sustainable Systems' },
-    { id: 4, name: 'Volume 4: Quantum Horizons' },
-  ];
-
-  // ---------- Dummy Issues ----------
-  const initialIssues = [
-    {
-      id: 101,
-      name: 'Issue 1: Inaugural Edition',
-      volumeId: 1,
-      date: '2024-03',
-    },
-    {
-      id: 102,
-      name: 'Issue 2: Spring Collection',
-      volumeId: 1,
-      date: '2024-06',
-    },
-    {
-      id: 201,
-      name: 'Issue 1: AI Revolution',
-      volumeId: 2,
-      date: '2024-09',
-    },
-    {
-      id: 301,
-      name: 'Issue 1: Green Energy',
-      volumeId: 3,
-      date: '2025-03',
-    },
-    {
-      id: 401,
-      name: 'Issue 1: Quantum Leap',
-      volumeId: 4,
-      date: '2025-09',
-    },
-  ];
-
   // ---------- State ----------
-  const [issues, setIssues] = useState(initialIssues);
+  const [volumes, setVolumes] = useState([]);
+  const [issues, setIssues] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null); // null = add mode, number = edit mode
 
@@ -67,6 +26,55 @@ const IssuePage = () => {
 
   useEffect(() => {
     console.debug('IssuePage rendered');
+  }, []);
+
+  // Fetch volumes and issues from backend on mount
+  useEffect(() => {
+    const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
+
+    const fetchVolumes = async () => {
+      try {
+        const resp = await fetch(`${phpBaseUrl}/api/issues.php?action=volumes`, {
+          headers: { Accept: 'application/json' },
+        });
+        const raw = await resp.text();
+        const result = raw ? JSON.parse(raw) : {};
+        if (resp.ok && result.success) {
+          setVolumes(result.data || []);
+        } else {
+          console.error('Failed to load volumes', resp.status, result);
+        }
+      } catch (err) {
+        console.error('Error fetching volumes', err);
+      }
+    };
+
+    const fetchIssues = async () => {
+      try {
+        const resp = await fetch(`${phpBaseUrl}/api/issues.php?action=list`, {
+          headers: { Accept: 'application/json' },
+        });
+        const raw = await resp.text();
+        const result = raw ? JSON.parse(raw) : {};
+        if (resp.ok && result.success) {
+          // result.data contains issues with `date` and `volume_id`
+          const rows = (result.data || []).map((r) => ({
+            id: r.id,
+            name: r.name,
+            volumeId: r.volume_id ?? r.volumeId ?? r.volume_id,
+            date: r.date || r.date,
+          }));
+          setIssues(rows);
+        } else {
+          console.error('Failed to load issues', resp.status, result);
+        }
+      } catch (err) {
+        console.error('Error fetching issues', err);
+      }
+    };
+
+    fetchVolumes();
+    fetchIssues();
   }, []);
 
   useEffect(() => {
@@ -120,7 +128,7 @@ const IssuePage = () => {
 
     const isEdit = editingIndex !== null;
     const issueId = isEdit ? issues[editingIndex].id : null;
-    const phpBaseUrl = 'https://tetronspublications.com/journal_php_backend';
+    const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
     const apiUrl = isEdit
       ? `${phpBaseUrl}/api/issues.php?action=update&id=${issueId}`
       : `${phpBaseUrl}/api/issues.php?action=create`;
@@ -167,6 +175,31 @@ const IssuePage = () => {
     } catch (error) {
       console.error('Issue save failed:', error);
       alert(error.message || 'Could not save issue.');
+    }
+  };
+
+  const handleDelete = async (index) => {
+    const issue = issues[index];
+    if (!issue) return;
+    // eslint-disable-next-line no-restricted-globals
+    if (!confirm(`Delete issue "${issue.name}"? This cannot be undone.`)) return;
+
+    const issueId = issue.id;
+    const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
+    const apiUrl = `${phpBaseUrl}/api/issues.php?action=delete&id=${issueId}`;
+
+    try {
+      const resp = await fetch(apiUrl, { method: 'POST', headers: { Accept: 'application/json' } });
+      const raw = await resp.text();
+      const result = raw ? JSON.parse(raw) : {};
+      if (!resp.ok || !result.success) {
+        const msg = result.error || (result.errors ? result.errors.join(', ') : 'Failed to delete issue.');
+        throw new Error(msg);
+      }
+      setIssues((prev) => prev.filter((i) => i.id !== issueId));
+    } catch (err) {
+      console.error('Failed to delete issue', err);
+      alert(err.message || 'Failed to delete issue.');
     }
   };
 
@@ -343,6 +376,28 @@ const IssuePage = () => {
           color: #3b6de7;
         }
         .issue-page .issue-item .actions .edit-btn i {
+          font-size: 0.8rem;
+        }
+        .issue-page .issue-item .actions .delete-btn {
+          background: none;
+          border: none;
+          color: #e74c3c;
+          font-size: 0.9rem;
+          padding: 0.3rem 0.8rem;
+          border-radius: 0.6rem;
+          cursor: pointer;
+          font-weight: 500;
+          transition: background 0.2s ease, color 0.2s ease;
+          font-family: inherit;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+        }
+        .issue-page .issue-item .actions .delete-btn:hover {
+          background: rgba(231, 76, 60, 0.06);
+          color: #c0392b;
+        }
+        .issue-page .issue-item .actions .delete-btn i {
           font-size: 0.8rem;
         }
         .issue-page .empty-state {
@@ -609,6 +664,9 @@ const IssuePage = () => {
                   <div className="actions">
                     <button className="edit-btn" onClick={() => openEditModal(index)}>
                       <i className="fas fa-edit" aria-hidden="true"></i> Edit
+                    </button>
+                    <button className="delete-btn" onClick={() => handleDelete(index)}>
+                      <i className="fas fa-trash" aria-hidden="true"></i> Delete
                     </button>
                   </div>
                 </div>

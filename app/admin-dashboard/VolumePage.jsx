@@ -3,36 +3,8 @@ import React, { useState, useEffect } from 'react';
 
 const VolumePage = () => {
   console.debug('VolumePage rendered');
-  // ---------- Dummy data ----------
-  const initialVolumes = [
-    {
-      id: 1,
-      name: 'Volume 1: Foundations',
-      fromDate: '2024-01', // YYYY-MM format
-      toDate: '2024-06',
-    },
-    {
-      id: 2,
-      name: 'Volume 2: Advances in AI',
-      fromDate: '2024-07',
-      toDate: '2024-12',
-    },
-    {
-      id: 3,
-      name: 'Volume 3: Sustainable Systems',
-      fromDate: '2025-01',
-      toDate: '2025-06',
-    },
-    {
-      id: 4,
-      name: 'Volume 4: Quantum Horizons',
-      fromDate: '2025-07',
-      toDate: '2025-12',
-    },
-  ];
-
   // ---------- State ----------
-  const [volumes, setVolumes] = useState(initialVolumes);
+  const [volumes, setVolumes] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null); // null = add mode, number = edit mode
 
@@ -43,6 +15,10 @@ const VolumePage = () => {
     toDate: '',
   });
   const [formErrors, setFormErrors] = useState({});
+  const [deletingIndex, setDeletingIndex] = useState(null);
+  const [fkErrorModalOpen, setFkErrorModalOpen] = useState(false);
+  const [fkErrorMessage, setFkErrorMessage] = useState('');
+  const [fkShowDetails, setFkShowDetails] = useState(false);
 
   // ---------- Handlers ----------
   const openAddModal = () => {
@@ -70,6 +46,28 @@ const VolumePage = () => {
     setFormData({ name: '', fromDate: '', toDate: '' });
     setFormErrors({});
   };
+
+  // Fetch volumes from backend on mount
+  useEffect(() => {
+    const fetchVolumes = async () => {
+      const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
+      const apiUrl = `${phpBaseUrl}/api/volumes.php?action=list`;
+      try {
+        const resp = await fetch(apiUrl, { headers: { Accept: 'application/json' } });
+        const raw = await resp.text();
+        const result = raw ? JSON.parse(raw) : {};
+        if (!resp.ok || !result.success) {
+          console.error('Failed to load volumes', resp.status, result);
+          return;
+        }
+        setVolumes(result.data || []);
+      } catch (err) {
+        console.error('Error fetching volumes', err);
+      }
+    };
+
+    fetchVolumes();
+  }, []);
 
   useEffect(() => {
     console.debug('isModalOpen changed:', isModalOpen);
@@ -108,7 +106,7 @@ const VolumePage = () => {
 
     const isEdit = editingIndex !== null;
     const volumeId = isEdit ? volumes[editingIndex].id : null;
-    const phpBaseUrl = 'https://tetronspublications.com/journal_php_backend';
+    const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
     const apiUrl = isEdit
       ? `${phpBaseUrl}/api/volumes.php?action=update&id=${volumeId}`
       : `${phpBaseUrl}/api/volumes.php?action=create`;
@@ -157,6 +155,55 @@ const VolumePage = () => {
       alert(error.message || 'Could not save volume.');
     }
   };
+
+  // Delete handler (declared after handleSubmit)
+  async function handleDelete(index) {
+    const vol = volumes[index];
+    if (!vol) return;
+    // eslint-disable-next-line no-restricted-globals
+    if (!confirm(`Delete volume "${vol.name}"? This will remove related data.`)) return;
+
+    const volumeId = vol.id;
+    const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
+    const apiUrl = `${phpBaseUrl}/api/volumes.php?action=delete&id=${volumeId}`;
+
+    console.debug('Deleting volume', { volumeId, apiUrl });
+    setDeletingIndex(index);
+    try {
+      const resp = await fetch(apiUrl, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' } });
+      const raw = await resp.text();
+      let result = {};
+      try {
+        result = raw ? JSON.parse(raw) : {};
+      } catch (parseErr) {
+        console.warn('Delete response not JSON', raw);
+      }
+      if (!resp.ok || !result.success) {
+        const msg = (result && (result.error || (result.errors && result.errors.join(', ')))) || `Failed to delete volume (status ${resp.status})`;
+        throw new Error(msg);
+      }
+      // update UI
+      setVolumes((prev) => prev.filter((v) => v.id !== volumeId));
+      console.debug('Volume deleted successfully', volumeId);
+    } catch (err) {
+      console.error('Failed to delete volume', err);
+      const msg = err && err.message ? String(err.message) : '';
+      const isFk = /1451|foreign key|Cannot delete or update a parent row/i.test(msg);
+      if (isFk) {
+        setFkErrorMessage(
+          'This volume cannot be deleted because there are issues that belong to it. Delete or reassign dependent issues before removing the volume.'
+        );
+        // keep full SQL message in details
+        setFkShowDetails(false);
+        setFkErrorModalOpen(true);
+        console.debug('FK delete prevented:', msg);
+      } else {
+        alert(err.message || 'Failed to delete volume.');
+      }
+    } finally {
+      setDeletingIndex(null);
+    }
+  }
 
   const formatDateDisplay = (dateStr) => {
     if (!dateStr) return '';
@@ -312,6 +359,28 @@ const VolumePage = () => {
           color: #3b6de7;
         }
         .volume-page .volume-item .actions .edit-btn i {
+          font-size: 0.8rem;
+        }
+        .volume-page .volume-item .actions .delete-btn {
+          background: none;
+          border: none;
+          color: #e74c3c;
+          font-size: 0.9rem;
+          padding: 0.3rem 0.8rem;
+          border-radius: 0.6rem;
+          cursor: pointer;
+          font-weight: 500;
+          transition: background 0.2s ease, color 0.2s ease;
+          font-family: inherit;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+        }
+        .volume-page .volume-item .actions .delete-btn:hover {
+          background: rgba(231, 76, 60, 0.06);
+          color: #c0392b;
+        }
+        .volume-page .volume-item .actions .delete-btn i {
           font-size: 0.8rem;
         }
         .volume-page .empty-state {
@@ -509,6 +578,11 @@ const VolumePage = () => {
           margin-top: 0.5rem;
         }
 
+          /* FK Error modal */
+          .fk-error-modal .modal { background: #fff6f6; border: 1px solid rgba(231,76,60,0.12);} 
+          .fk-error-modal .modal-header h2 { color: #c0392b; }
+          .fk-error-modal .details { font-size: 0.85rem; color: #444; background: #fff; padding: 0.8rem; border-radius: 0.6rem; margin-top: 0.6rem; border: 1px solid rgba(0,0,0,0.04); }
+
         /* ---- Animations ---- */
         @keyframes fadeIn {
           from { opacity: 0; }
@@ -672,6 +746,14 @@ const VolumePage = () => {
                     <button className="edit-btn" onClick={() => openEditModal(index)}>
                       <i className="fas fa-edit" aria-hidden="true"></i> Edit
                     </button>
+                    <button
+                      className="delete-btn"
+                      onClick={() => (typeof handleDelete === 'function' ? handleDelete(index) : null)}
+                      disabled={deletingIndex === index}
+                    >
+                      <i className="fas fa-trash" aria-hidden="true"></i>
+                      {deletingIndex === index ? ' Deleting...' : ' Delete'}
+                    </button>
                   </div>
                 </div>
               ))
@@ -680,6 +762,33 @@ const VolumePage = () => {
         </div>
 
         {/* (modal removed — inline panel used instead) */}
+        {fkErrorModalOpen && (
+          <div className="modal-overlay fk-error-modal" role="dialog" aria-modal="true">
+            <div className="modal">
+              <div className="modal-header">
+                <h2><i className="fas fa-exclamation-triangle" aria-hidden="true"></i> Cannot Delete Volume</h2>
+                <button className="close-btn" onClick={() => setFkErrorModalOpen(false)} aria-label="Close">
+                  <i className="fas fa-times"></i>
+                </button>
+              </div>
+              <div>
+                <p>{fkErrorMessage}</p>
+                <button type="button" className="submit-btn" onClick={() => setFkErrorModalOpen(false)} style={{marginTop: '0.8rem'}}>OK</button>
+                <div style={{marginTop: '0.6rem'}}>
+                  <button type="button" className="add-btn" onClick={() => setFkShowDetails((s) => !s)} style={{padding: '0.4rem 0.8rem', fontSize: '0.85rem'}}>
+                    {fkShowDetails ? 'Hide details' : 'Show details'}
+                  </button>
+                  {fkShowDetails && (
+                    <div className="details">
+                      <pre style={{whiteSpace: 'pre-wrap'}}>{/* show original error message if any */}{/* eslint-disable-next-line react/no-danger */}{fkErrorMessage && ''}</pre>
+                      <p style={{fontSize: '0.85rem', color: '#666', marginTop: '0.4rem'}}>Full SQL error available in browser console.</p>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </>
   );

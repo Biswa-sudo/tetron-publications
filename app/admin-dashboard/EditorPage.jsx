@@ -2,66 +2,13 @@
 import React, { useState, useEffect } from 'react';
 
 const EditorPage = () => {
-  // ---------- Dummy data ----------
-  const initialEditors = [
-    {
-      id: 1,
-      name: 'Dr. Sarah Chen',
-      role: 'Editor-in-Chief',
-      scale: 'Senior',
-      affiliation: 'MIT',
-      email: 'sarah.chen@mit.edu',
-      country: 'USA',
-      institution: 'Massachusetts Institute of Technology',
-      journal: 'Nature Communications',
-    },
-    {
-      id: 2,
-      name: 'Prof. James Wilson',
-      role: 'Editor',
-      scale: 'Associate',
-      affiliation: 'Stanford University',
-      email: 'jwilson@stanford.edu',
-      country: 'USA',
-      institution: 'Stanford University',
-      journal: 'IEEE Transactions',
-    },
-    {
-      id: 3,
-      name: 'Dr. Emily Rodriguez',
-      role: 'Editor',
-      scale: 'Senior',
-      affiliation: 'Oxford University',
-      email: 'emily.r@oxford.ac.uk',
-      country: 'UK',
-      institution: 'University of Oxford',
-      journal: 'Scientific Reports',
-    },
-    {
-      id: 4,
-      name: 'Prof. Michael Kim',
-      role: 'Chief Editor',
-      scale: 'Lead',
-      affiliation: 'National University of Singapore',
-      email: 'm.kim@nus.edu.sg',
-      country: 'Singapore',
-      institution: 'National University of Singapore',
-      journal: 'Journal of Advanced Research',
-    },
-  ];
+  // editors are loaded from the backend
 
-  // Dummy journal options (matching the submit article page)
-  const journalOptions = [
-    'Journal of Advanced Research',
-    'International Journal of Science',
-    'Nature Communications',
-    'Scientific Reports',
-    'IEEE Transactions',
-    'PLOS ONE',
-  ];
+  // journal options are loaded from the backend
+  const [journalOptions, setJournalOptions] = useState([]);
 
   // ---------- State ----------
-  const [editors, setEditors] = useState(initialEditors);
+  const [editors, setEditors] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingIndex, setEditingIndex] = useState(null); // null = add mode, number = edit mode
 
@@ -77,6 +24,7 @@ const EditorPage = () => {
     journal: '',
   });
   const [formErrors, setFormErrors] = useState({});
+  const [deletingIndex, setDeletingIndex] = useState(null);
 
   // ---------- Handlers ----------
   const openAddModal = () => {
@@ -99,6 +47,44 @@ const EditorPage = () => {
   useEffect(() => {
     console.debug('EditorPage rendered; isModalOpen=', isModalOpen);
   }, [isModalOpen]);
+
+  // Fetch editors from backend on mount
+  useEffect(() => {
+    const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
+    const fetchEditors = async () => {
+      try {
+        const resp = await fetch(`${phpBaseUrl}/api/editors.php?action=list`, { headers: { Accept: 'application/json' } });
+        const raw = await resp.text();
+        const result = raw ? JSON.parse(raw) : {};
+        if (resp.ok && result.success) {
+          setEditors(result.data || []);
+        } else {
+          console.error('Failed to load editors', resp.status, result);
+        }
+      } catch (err) {
+        console.error('Error fetching editors', err);
+      }
+    };
+
+    fetchEditors();
+    // fetch journals for dropdown
+    const fetchJournals = async () => {
+      try {
+        const resp = await fetch(`${phpBaseUrl}/api/journals.php?action=list`, { headers: { Accept: 'application/json' } });
+        const raw = await resp.text();
+        const result = raw ? JSON.parse(raw) : {};
+        if (resp.ok && result.success) {
+          // map to names
+          setJournalOptions((result.data || []).map((r) => r.name));
+        } else {
+          console.error('Failed to load journals', resp.status, result);
+        }
+      } catch (err) {
+        console.error('Error fetching journals', err);
+      }
+    };
+    fetchJournals();
+  }, []);
 
   const openEditModal = (index) => {
     console.log('Opening edit modal for index:', index);
@@ -151,22 +137,91 @@ const EditorPage = () => {
     e.preventDefault();
     if (!validateForm()) return;
 
-    const newEditor = {
-      id: editingIndex === null ? Date.now() : editors[editingIndex].id,
-      ...formData,
+    const payload = {
+      name: formData.name.trim(),
+      role: formData.role,
+      scale: formData.scale,
+      affiliation: formData.affiliation,
+      email: formData.email,
+      country: formData.country,
+      institution: formData.institution,
+      journal: formData.journal,
     };
 
-    if (editingIndex === null) {
-      setEditors([...editors, newEditor]);
-    } else {
-      const updatedEditors = [...editors];
-      updatedEditors[editingIndex] = newEditor;
-      setEditors(updatedEditors);
-    }
-    closeModal();
+    const isEdit = editingIndex !== null;
+    const editorId = isEdit ? editors[editingIndex].id : null;
+    const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
+    const apiUrl = isEdit
+      ? `${phpBaseUrl}/api/editors.php?action=update&id=${editorId}`
+      : `${phpBaseUrl}/api/editors.php?action=create`;
+
+    (async () => {
+      try {
+        const res = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+          body: JSON.stringify(payload),
+        });
+        const raw = await res.text();
+        let result = {};
+        try { result = raw ? JSON.parse(raw) : {}; } catch (e) { throw new Error(raw || 'Invalid response'); }
+        if (!res.ok || !result.success) {
+          const msg = result.error || (result.errors ? result.errors.join(', ') : 'Failed to save editor');
+          throw new Error(msg);
+        }
+
+        const savedEditor = {
+          id: isEdit ? editorId : result.id,
+          ...payload,
+        };
+
+        if (isEdit) {
+          const updated = [...editors];
+          updated[editingIndex] = savedEditor;
+          setEditors(updated);
+        } else {
+          setEditors((prev) => [...prev, savedEditor]);
+        }
+        closeModal();
+      } catch (err) {
+        console.error('Failed to save editor', err);
+        alert(err.message || 'Failed to save editor');
+      }
+    })();
   };
   // debug render log
   console.log('EditorPage render', { isModalOpen });
+
+  // Delete handler
+  async function handleDelete(index) {
+    const editor = editors[index];
+    if (!editor) return;
+    // eslint-disable-next-line no-restricted-globals
+    if (!confirm(`Delete editor "${editor.name}"? This action cannot be undone.`)) return;
+
+    const editorId = editor.id;
+    const phpBaseUrl = process.env.NEXT_PUBLIC_PHP_API_URL || 'https://tetronpublications.com/journal_php_backend';
+    const apiUrl = `${phpBaseUrl}/api/editors.php?action=delete&id=${editorId}`;
+
+    setDeletingIndex(index);
+    try {
+      const resp = await fetch(apiUrl, { method: 'POST', headers: { Accept: 'application/json', 'Content-Type': 'application/json' } });
+      const raw = await resp.text();
+      let result = {};
+      try { result = raw ? JSON.parse(raw) : {}; } catch (e) { console.warn('Non-JSON delete response', raw); }
+      if (!resp.ok || !result.success) {
+        const msg = (result && (result.error || (result.errors && result.errors.join(', ')))) || `Failed to delete editor (status ${resp.status})`;
+        throw new Error(msg);
+      }
+      // remove from UI
+      setEditors((prev) => prev.filter((e) => e.id !== editorId));
+    } catch (err) {
+      console.error('Failed to delete editor', err);
+      alert(err.message || 'Failed to delete editor.');
+    } finally {
+      setDeletingIndex(null);
+    }
+  }
 
   try {
     return (
@@ -356,6 +411,28 @@ const EditorPage = () => {
           color: #3b6de7;
         }
         .editor-page .editor-item .actions .edit-btn i {
+          font-size: 0.8rem;
+        }
+        .editor-page .editor-item .actions .delete-btn {
+          background: none;
+          border: none;
+          color: #e74c3c;
+          font-size: 0.9rem;
+          padding: 0.3rem 0.8rem;
+          border-radius: 0.6rem;
+          cursor: pointer;
+          font-weight: 500;
+          transition: background 0.2s ease, color 0.2s ease, opacity 0.15s ease;
+          font-family: inherit;
+          display: inline-flex;
+          align-items: center;
+          gap: 0.3rem;
+        }
+        .editor-page .editor-item .actions .delete-btn:hover {
+          background: rgba(231, 76, 60, 0.06);
+          color: #c0392b;
+        }
+        .editor-page .editor-item .actions .delete-btn i {
           font-size: 0.8rem;
         }
         .editor-page .empty-state {
@@ -642,9 +719,18 @@ const EditorPage = () => {
                     </span>
                   </div>
                   <div className="actions">
-                    <button className="edit-btn" onClick={() => openEditModal(index)}>
-                      <i className="fas fa-edit" aria-hidden="true"></i> Edit
-                    </button>
+                        <button className="edit-btn" onClick={() => openEditModal(index)}>
+                          <i className="fas fa-edit" aria-hidden="true"></i> Edit
+                        </button>
+                        <button
+                          className="delete-btn"
+                          onClick={() => handleDelete(index)}
+                          disabled={deletingIndex === index}
+                          style={{ opacity: deletingIndex === index ? 0.6 : 1 }}
+                        >
+                          <i className="fas fa-trash" aria-hidden="true"></i>
+                          {deletingIndex === index ? ' Deleting...' : ' Delete'}
+                        </button>
                   </div>
                 </div>
               ))
@@ -763,9 +849,13 @@ const EditorPage = () => {
                   className={formErrors.journal ? 'error' : ''}
                 >
                   <option value="">— Select Journal —</option>
-                  {journalOptions.map((j) => (
-                    <option key={j} value={j}>{j}</option>
-                  ))}
+                  {journalOptions.length === 0 ? (
+                    <option value="">Loading journals...</option>
+                  ) : (
+                    journalOptions.map((j) => (
+                      <option key={j} value={j}>{j}</option>
+                    ))
+                  )}
                 </select>
                 {formErrors.journal && <div className="error-text">{formErrors.journal}</div>}
               </div>
